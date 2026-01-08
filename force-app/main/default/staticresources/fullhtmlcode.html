@@ -1,0 +1,49 @@
+
+
+ <html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Widget</title>
+
+</head>
+<body>
+
+    <script>
+      
+        var DynamicUrl = window.location.origin;
+        const urlParams = new URLSearchParams(window.location.search);
+        const apiKey = urlParams.get('apiKey') || '';
+        const toNumber = urlParams.get('toNumber') || '';
+        const fromNumber = urlParams.get('fromNumber') || '';
+        console.log("To Number:", toNumber);
+        (function(y,a,b,r){
+          if(y.yabbr)return;
+          r=a.createElement("script");
+          r.async= true;
+          r.src = DynamicUrl+"/resource/1734431337000/S2V__RcsZIPCHAT/Js/chat-loader.js";
+          a.body.appendChild(r);
+          r=y.yabbr=function(c,d){
+            r._[c]=d;
+          };
+          r._={
+            key: b,
+            size: {width:'500px', height:'600px'},
+            hiddenElements: ['left-pane', 'feed-status-conclude', 'feed-status-pin', 'feed-copy-transcript'],
+            actions: {
+              onSession: (session) => console.log('Chat session state:', session),
+              onLogin: () => {
+                if (window.top.yccli.getSession() === 'LOGGED_IN') {
+                    window.top.yccli.toggleChatFrame(true);
+                    window.top.yccli.startChat({ to: toNumber, from: fromNumber, type: 'sms' });
+                }
+              },
+              onConclude: ({ transcriptId, type, tags }) => {
+                console.log(transcriptId, type, tags);
+              },
+            },
+          };
+        })(window,document,apiKey);
+      </script>
+	</body>
+</html>

@@ -1,0 +1,62 @@
+<apex:page standardController="Lead"  extensions="Airwaves360SendSMSLead" lightningStylesheets="true" sidebar="false" showHeader="false" docType="html-5.0" showQuickActionVfHeader="true"  >
+    
+    <apex:stylesheet value="{!URLFOR($Resource.SLDS1050, 'styles/salesforce-lightning-design-system.min.css')}" />
+    
+    
+    <apex:form >
+        
+     
+        <apex:outputPanel >
+            
+            <apex:pageMessages id="Apex-msg"></apex:pageMessages>
+            <p class="slds-align_absolute-center slds-m-top_x-small"><b>Send SMS to: {!LeadName}</b></p>
+            <table>
+                <tr>
+                    <th style="padding-left: 2.5%;">
+                        <apex:outputpanel id="sms-panel1">
+                            <div id="sms-div1" style="margin-top:20%;"> Please Select the SMS Template </div> 
+                        </apex:outputpanel> 
+                    </th>
+                    
+                    <td style="padding-right: 11.5%;" colspan="2">
+                        <apex:outputpanel id="sms-panel2">
+                            <div id="sms-div2" style="margin-top:10%;">           
+                                <apex:selectList value="{!smstemplateID}" size="1" styleClass="slds-input slds-combobox__input" style="width:80%"  id="smsTemplateeditor" >                                                  
+                                    <apex:selectOptions value="{!SmsTemplates}"/>
+                                    <apex:actionSupport action="{!AllSmsTemplate}"  event="onchange"/>
+                                </apex:selectList>
+                            </div>
+                        </apex:outputpanel>            
+                    </td> 
+                </tr>
+                
+                <tr style="margin-top:5%">
+                    <th style="padding-left: 2.5%;">
+                        <apex:outputpanel id="sms-panel3">
+                            <div id="sms-div3"> SMS template body
+                            </div>
+                        </apex:outputpanel>
+                    </th>
+                    <td style="padding-right: 11.5%;" colspan="2">
+                        <apex:outputPanel id="pnlEmailData">
+                            <div id="sms-div4" style="margin-top:10%;">
+                                <apex:inputtextarea id="text_area_field" styleclass="countable1" style="width:80%" rows="10" richtext="false" value="{!smstemplateBody}"/>
+                                <!-- <apex:inputtextarea id="text_area_field" styleClass="ckeditor" style="width:70%" rows="10" richtext="false" value="{!smstemplateBody}"/> -->
+                                <!-- <apex:inputHidden id="hidden_text_area_field" value="{!smstemplateBody}"/> -->
+                            </div>
+                        </apex:outputPanel>
+                    </td>
+                </tr>
+                
+                
+            </table>
+            <apex:actionFunction name="SendSMS" action="{!SendSMS}" />
+            <div class="slds-align_absolute-center slds-p-top_medium">
+                <button onClick="SendSMS(); return false;" class="slds-button slds-button_brand">Send</button>
+                
+            </div>
+            
+        </apex:outputPanel> 
+    </apex:form>
+    
+</apex:page>

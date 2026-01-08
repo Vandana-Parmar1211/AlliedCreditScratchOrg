@@ -1,0 +1,40 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Widget</title>
+</head>
+<body>
+    <script>
+        (function(y,a,b,r){
+            if(y.yabbr)return;
+            r=a.createElement("script");
+            r.async=1;
+            r.src="https://my.airwaves360.com/chat-loader.js";
+            a.body.appendChild(r);
+            r=y.yabbr=function(c,d){r._[c]=d;};
+            r._={
+                key:b,
+                size:{
+                    width:'300px',
+                    height:'300px'
+                },
+                actions: {
+                    onSession: (session) => console.log(`Chat session state: ${session}`+ '' + key),
+                    onConclude: (conclusion) => console.log(`The ${conclusion.type} chat ${conclusion.transcriptId} has concluded with the tags: ${conclusion.tags.join(', ')}`),
+                    onLogin: () => {
+                        yccli.toggleChatFrame(true);
+                        yccli.startChat({ to: '61400000000', from: '61480092227', type: 'sms' });
+                    },
+                }
+            };
+        })(window,document,"89e5f35b21c98a70b44649d15860c2c914d4d44b6c1af5785d1faffe3f1aa2a2");
+
+        if (yccli.getSession() === 'LOGGED_IN') {
+            yccli.startChat({ to: '61400000001', from: '61480092227', type: 'sms' });
+        }
+    </script>
+</body>
+</html>

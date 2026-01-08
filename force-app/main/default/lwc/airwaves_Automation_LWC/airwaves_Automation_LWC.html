@@ -1,0 +1,289 @@
+<template>
+    <lightning-card>
+
+        <div class="spinner">
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading" variant="brand" size="medium">
+                </lightning-spinner>
+            </template>
+        </div>
+
+        <div class="slds-grid slds-wrap slds-p-around_medium slds-align-middle" style="gap: 5rem;">
+            <div class="slds-col slds-size_1-of-1 slds-align-middle">
+                <center><button class="slds-button slds-button_neutral" onclick={handleSaveData}>Submit</button>
+                    <button class="slds-button slds-button_neutral" onclick={handleCancelButton}>Cancel</button>
+                </center>
+            </div>
+        </div>
+
+        <ul>
+            <li>
+                <div class="slds-grid slds-wrap slds-p-left_medium slds-align-middle" style="gap: 1rem;">
+                    <div class="slds-col slds-size_1-of-2 slds-align-middle">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" style=" font-size: 14px;"><h2>Step *: Please select any one.</h2></label>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-4 slds-align-middle">
+                        <!--<lightning-radio-group name="radioGroup" options={radioOptions} type="radio" onchange={handleRadioChange}>
+            </lightning-radio-group>-->
+
+                        <template for:each={radioOptions} for:item="item">
+                            <fieldset key={item.value} style="display: block; float: left;">
+                                <div class="slds-form-element">
+                                    <span class="slds-radio">
+                            <input name="radiogroup" id={item.value} type="radio" value={item.value} onchange={handleRadioChange}/>
+                            <label class="slds-radio__label" for={item.value}>
+                                <span class="slds-radio_faux"></span>
+                                    <span class="slds-form-element__label">{item.label}</span>
+                                    </label>
+                                    </span>
+                                </div>
+                            </fieldset>
+                        </template>
+                    </div>
+                </div>
+            </li>
+
+            <li>
+                <div class="slds-grid slds-wrap slds-p-left_medium slds-align-middle" style="gap: 1rem;">
+                    <div class="slds-col slds-size_1-of-2 slds-align-middle">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" style="margin: 0; font-size: 14px;">
+          Step 1: Select Object (on which you wanted to automate the process)
+        </label>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-4 slds-align-middle">
+                        <div class="slds-form-element">
+                            <lightning-combobox name="Objects" options={objectOptions} onchange={handleObjectChange}
+                                disabled={isObjectsDisabled} value={objectName}>
+                            </lightning-combobox>
+                        </div>
+                    </div>
+                </div>
+            </li>
+
+            <li>
+                <div class="slds-grid slds-wrap slds-p-left_medium slds-align-middle" style="gap: 1rem;">
+                    <div class="slds-col slds-size_1-of-2 slds-align-middle">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label" style="margin: 0; font-size: 14px;">
+              Step 2: Please select a Type (Contact OR Lead) to whom you wanted to send {voiceorsmstext}
+            </label>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-4 slds-align-middle">
+                        <div class="slds-form-element">
+                            <lightning-combobox name="Tocontact" options={toContactOptions}
+                                onchange={handletoContactChange} disabled={isTocontactDisabled}
+                                value={toContactObjectName}>
+                            </lightning-combobox>
+                        </div>
+                    </div>
+                </div>
+            </li>
+
+            <li>
+                <div class="slds-grid slds-wrap slds-p-left_medium slds-align-middle" style="gap: 1rem;">
+                    <div class="slds-col slds-size_1-of-2 slds-align-middle">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label slds-text-heading_small" style="margin: 0; font-size: 14px;">
+              Step 3: Please select the fields to whom we need to send {voiceorsmstext}
+            	  </label>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-4 slds-align-middle">
+                        <div class="slds-form-element">
+                            <lightning-combobox name="TowhomId" options={whomIdOptions} onchange={handletowhomIdChange}
+                                disabled={iswhomIdDisabled} value={toWhomFieldName}>
+                            </lightning-combobox>
+                        </div>
+                    </div>
+                </div>
+            </li>
+
+            <li hidden={isSMSTemplateHidden}>
+                <div class="slds-grid slds-wrap slds-p-left_medium slds-align-middle" style="gap: 1rem;">
+                    <div class="slds-col slds-size_1-of-2 slds-align-middle">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label slds-text-heading_small" style="margin: 0; font-size: 14px;">
+              Step *: Please Select the SMS Template
+              </label>
+                        </div>
+                    </div>
+
+                    <div class="slds-col slds-size_1-of-4 slds-align-middle">
+                        <div class="slds-form-element">
+                            <lightning-combobox name="SMSTemplat" options={smsTemplateOptions}
+                                onchange={handleSMSTemplateChange} disabled={isSMSTemplateDisabled}
+                                value={smsTemplateValue}>
+                            </lightning-combobox>
+                        </div>
+                    </div>
+                </div>
+            </li>
+
+            <li hidden={isUserReferenceHidden}>
+                <div class="slds-grid slds-wrap slds-p-left_medium slds-align-middle" style="gap: 1rem;">
+                    <div class="slds-col slds-size_1-of-2 slds-align-middle">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label slds-text-heading_small" style="margin: 0; font-size: 14px;">
+              Step 4: Select User Reference fields based on the above selected type
+            </label>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-4 slds-align-middle">
+                        <div class="slds-form-element">
+                            <lightning-combobox name="Referencefield" options={referencefieldOptions}
+                                onchange={handleReferencefieldChange} disabled={isReferencefieldDisabled}
+                                value={referenceFieldValue}>
+                            </lightning-combobox>
+                        </div>
+                    </div>
+                </div>
+            </li>
+
+            <li hidden={isRecordingNumberHidden}>
+                <div class="slds-grid slds-wrap slds-p-left_medium slds-align-middle" style="gap: 1rem;">
+                    <div class="slds-col slds-size_1-of-2 slds-align-middle">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label slds-text-heading_small" style="margin: 0; font-size: 14px;">
+              Step 5: Select Recording number which you want to send
+            </label>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-4 slds-align-middle">
+                        <div class="slds-form-element">
+                            <lightning-combobox name="Recordingnumber" options={recordingNumberOptions}
+                                onchange={handleRecordingNumberChange} disabled={isRecordingNumberDisabled}
+                                value={recordingNumber}>
+                            </lightning-combobox>
+                        </div>
+                    </div>
+                </div>
+            </li>
+
+            <li>
+                <div class="slds-grid slds-wrap slds-p-left_medium slds-align-middle" style="gap: 1rem;">
+                    <div class="slds-col slds-size_1-of-2 slds-align-middle">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label slds-text-heading_small" style="margin: 0; font-size: 14px;">
+              Step {changeStepNumber}: Option Schedule
+            </label>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-4 slds-align-middle">
+                        <div class="slds-form-element">
+                            <lightning-combobox name="schedule" options={scheduleOptions}
+                                onchange={handleOptionScheduleChange} disabled={isScheduledDisabled}
+                                value={scheduleValue}>
+                            </lightning-combobox>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li hidden={scheduleValueIsFutureCall}>
+                <div class="slds-grid slds-wrap slds-p-left_medium slds-align-middle" style="gap: 1rem;">
+                    <div class="slds-col slds-size_1-of-2 slds-align-middle">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label slds-text-heading_small" style="margin: 0; font-size: 14px;">
+              Step {changeStepNumber}A: Schedule Frequency
+            </label>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-4 slds-align-middle">
+                        <div class="slds-form-element">
+                            <lightning-combobox name="schedule" options={scheduleFrequency}
+                                onchange={handlescheduleFrequencyChange} value={scheduleFrequencyValue}>
+                            </lightning-combobox>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li hidden={scheduleValueIsFutureCall}>
+                <div class="slds-grid slds-wrap slds-p-left_medium slds-align-middle" style="gap: 1rem;">
+                    <div class="slds-col slds-size_1-of-2 slds-align-middle">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label slds-text-heading_small" style="margin: 0; font-size: 14px;">
+              Step {changeStepNumber}B: Schedule Date-Time
+            </label>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-4 slds-align-middle">
+                        <div class="slds-form-element">
+                            <lightning-input name="scheduleDateTime" type="number"
+                                onchange={handleFrequencyDateTimeScheduleChange} value={scheduleFrequencyDateTimeValue}>
+                            </lightning-input>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+        <div class="slds-scrollable_x slds-p-around_medium">
+            <span><b>Please use below filter conditions to filter records which is eligible for automation (Ex: If OpportunityAmount > 1000)</b></span>
+            <br/><br/>
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                <thead>
+                    <tr class="slds-line-height_reset">
+                        <th scope="col">
+                            <div class="slds-truncate">FIELD NAME</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate">OPERATOR</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate">VALUE</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate">CLEAR CONDITION</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <template for:each={rows} for:item="row" for:index="i">
+                        <tr key={row.id} data-index={i}>
+                            <td>
+                                <lightning-combobox name="fieldName" data-index={i} options={objectFields}
+                                    value={row.fieldValue} onchange={handleFieldChange} disabled={row.disabled} dropdown-alignment="auto">
+                                </lightning-combobox>
+                            </td>
+                            <td>
+                                <lightning-combobox name="operator" data-index={i} options={row.operatorOptions}
+                                    value={row.operatorValue} onchange={handleOperatorChange} disabled={row.disabled} dropdown-alignment="auto">
+                                </lightning-combobox>
+                            </td>
+                            <td>
+                                <template if:false={row.isPicklist}>
+                                    <lightning-input type={row.type} data-index={i} value={row.inputValue}
+                                        checked={row.checked} onchange={handleValueChange} disabled={row.disabled}>
+                                    </lightning-input>
+                                </template>
+                                <template if:true={row.isPicklist}>
+                                    <lightning-combobox name="picklistOptions" data-index={i}
+                                        options={row.inputPicklist} value={row.inputValue} onchange={handleValueChange}
+                                        disabled={row.disabled} dropdown-alignment="auto">
+                                    </lightning-combobox>
+                                </template>
+                            </td>
+                            <td>
+                                <lightning-button-icon icon-name="utility:close" alternative-text="Clear" title="Clear"
+                                    onclick={handleRemoveFilter} data-index={i} disabled={row.disabled}>
+                                </lightning-button-icon>
+                            </td>
+                        </tr>
+                    </template>
+
+                </tbody>
+            </table>
+        </div>
+        <div class="slds-grid slds-wrap slds-p-around_medium slds-align-middle" style="gap: 1rem;">
+            <div class="slds-col slds-size_1-of-1 slds-align-middle">
+                <center><button class="slds-button slds-button_neutral" onclick={handleSaveData}>Submit</button>
+                    <button class="slds-button slds-button_neutral " onclick={handleCancelButton}>Cancel</button>
+                </center>
+            </div>
+        </div>
+    </lightning-card>
+</template>

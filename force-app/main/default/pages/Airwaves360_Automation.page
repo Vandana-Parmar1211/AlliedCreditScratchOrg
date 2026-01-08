@@ -1,0 +1,1325 @@
+<apex:page docType="html-5.0" controller="Airwaves360VoiceMailSendPageController" standardStylesheets="false" lightningStylesheets="true" applyBodyTag="false" cache="false" sidebar="false">
+    <apex:includeScript value="{!$Resource.CdnCkeditor}"/>
+    <apex:outputPanel id="stylesform">
+        <style>
+            #tblFirst th{
+                font-family:Salesforce Sans;
+                text-align: left;
+                width: 50%;
+            }
+
+            #table{
+                font-family:Salesforce Sans;
+                text-align: left;
+                width: 50%;
+            }
+            #tblFirst td{
+                font-family:Salesforce Sans;
+                text-align: left;
+                width: 25%;
+            }
+            #tblId , #tblFirst{
+                display: table;
+                border-collapse: separate;
+                border-spacing: 17px;
+                border-color: grey;
+            }
+            tr {
+                display: table-row;
+                vertical-align: right;
+                border-color: inherit;
+            }
+            tbody {
+                display: table-row-group;
+                vertical-align: right;
+                border-color: inherit;
+            }
+            th{
+                font-family:Salesforce Sans;
+                text-align: left;
+                
+            }
+            td{
+                font-family:Salesforce Sans;
+                text-align: left;
+                
+            } 
+            .bPageBlock.brandSecondaryBrd.apexDefaultPageBlock.secondaryPalette{
+                background-color: white !important;
+            }
+            .slds-input{
+                width:30%;
+            }
+            .mainTitle{
+                font-size: 31px;
+                margin-left: 27px;
+            }
+            #rcorners2 {
+                border-radius: 10px;
+                border: 2px solid #ff0000;
+                padding: 20px; 
+                width: 70%;
+                height: auto;    
+            }
+        
+            .custom-radio label {
+                font-size: 12px;
+                margin: 0px;
+                font-family: 'Salesforce Sans';
+                font-weight: bold;
+            }
+            
+            .custom-radio input[type="radio"] {
+                transform: scale(1.5); /* Increase the size of the radio button */
+                margin-right: 12px; /* Space between the radio button and text */
+            }
+
+            th.headerRow {
+                font-family: 'Salesforce Sans';
+                font-size: 12px !important ;
+            }
+        </style>
+    
+        <!-- LIGHTNING DESIGN COMPONENT FROM STATIC RESORUCE -->
+        
+        <apex:stylesheet value="{!URLFOR($Resource.SLDS1050, 'styles/salesforce-lightning-design-system.min.css')}" />
+            <head>
+                <apex:includeScript value="{!$Resource.JqueryMinJs}"/>
+                <apex:stylesheet value="{!$Resource.BootstrapCSS}"/>
+                <apex:includeScript value="{!$Resource.GithubSelect2}"/>
+                <!--  jQuery -->
+                <apex:includeScript value="{!$Resource.CodeJquery}"/>
+                <!-- Isolated Version of Bootstrap, not needed if your site already uses Bootstrap -->
+                <apex:stylesheet value="{!$Resource.bootstrapISO}"/>
+            </head>
+    </apex:outputPanel>
+    <!-- MAIN CODE STARTS HERE -->
+    <apex:pageMessages />
+    <apex:form id="forms">
+        <apex:actionStatus id="spinnerStatus" rendered="true" onstart="showSpinner();" onstop="hideSpinner();">
+            <apex:facet name="start">
+                <div class="slds-spinner_container slds-hide">
+                    <div class="slds-spinner--brand slds-spinner slds-spinner--medium" aria-hidden="false" role="alert">
+                        <div class="slds-spinner__dot-a"/>
+                        <div class="slds-spinner__dot-b"/>
+                    </div>
+                </div>
+            </apex:facet>
+        </apex:actionStatus>
+                            
+        <apex:pageBlock >
+            <table id="tblId">
+                <tr>
+                    <!-- COMMAND BUTTONS -->
+                    <apex:pageBlockButtons >
+                        <center>
+                            <td class = "subbuttons">
+                                <apex:commandButton value="Submit" id="submit" styleClass="slds-button slds-button_brand textalignleft" style="{!IF(OR($User.UITheme == 'Theme4d',$User.UITheme == 'Theme4u'),'margin-left:75%;','margin-left:-9%;')} width: 70px; height: 30px; font-size: 12px; padding: 5px;"  action="{!saveData}"
+                                                rendered="{!NOT(isEditMode)}" status="spinnerStatus"  />
+                                <!-- <apex:actionFunction name="executeApexCommand"  reRender="pb1" action="{!saveData}" status="spinnerStatus">
+                                </apex:actionFunction> -->
+                                    
+                                <apex:commandButton value="Update" styleClass="slds-button slds-button_brand textalignleft" style="{!IF(OR($User.UITheme == 'Theme4d',$User.UITheme == 'Theme4u'),'margin-left:75%;','margin-left:-9%;')} width: 70px; height: 30px; font-size: 12px; padding: 5px;" action="{!saveData}" rendered="{!isEditMode}" status="spinnerStatus" />
+                            </td>
+                            <td class = "subbuttons">
+                                <apex:commandButton value="Cancel" id="cancl" style="{!IF(OR($User.UITheme == 'Theme4d',$User.UITheme == 'Theme4u'),'margin-left:-5%;','margin-left:-96%;')} width: 70px; height: 30px; font-size: 12px; padding: 5px;" styleClass="slds-button slds-button_destructive textalignleft" oncomplete="hide_TwoTd()"/>
+                                </td>
+                        </center>
+                    </apex:pageBlockButtons>
+                </tr>
+            </table>
+                                                        
+            <table id="tblFirst">
+                <!-- RADIO BUTTON -->
+                <!-- OBJECT NAMES -->
+                                                                    
+                <tr>
+                    <th style="padding-left: 2.5%;">
+                        Step *: Please select any one.
+                    </th>
+                    <td style="padding-right: 11.5%;" colspan="2">
+                        <apex:selectRadio styleClass="slds-radio_faux custom-radio" value="{!radioValues}" id="radioValues">
+                            <apex:selectOptions value="{!radios}"/>
+                            <apex:actionSupport action="{!actionSave}" event="onchange" reRender="recordingid,referenceids,flds0,flds1,flds2,flds3,flds4,flds5,btnclassremove,flds,conldlookup,sms-panel1,sms-panel2,sms-panel3,pnlEmailData,sms-panel5,sms-panel6,voicemail-panel1,voicemail-panel2,voicemail-panel3,sms-panel12,default-panel,voicemail-panel13,sms-panel13,default-panel1,voicemail-panel12,OD,voicemail-panel4,OS,scdlFreqVal,SF,SF_td " status="spinnerStatus" oncomplete="return hideshowusr();"/>
+                        </apex:selectRadio>
+                    </td>
+                </tr>
+             
+                <tr></tr>
+                <tr>
+                    <th style="padding-left: 2.5%;">
+                        Step 1: Select Object (on which you wanted to automate the process)
+                    </th>
+                    <td style="padding-right: 11.5%;" colspan="2"> 
+                        <apex:selectList styleClass="slds-input slds-combobox__input" value="{!selectedObject}" id="objects" size="1" style="width:50%">
+                            <apex:selectOptions value="{!lstObjNames}" />
+                            <apex:actionSupport event="onchange" reRender="recordingid,referenceids,table,btnclassremove,flds,conldlookup,sms-panel2" status="spinnerStatus" action="{!onObjectChange}" oncomplete="return hideshowusr();"/>
+                        </apex:selectList>
+                    </td>
+                </tr>
+                                    
+                <!-- WHICH FIELDS NEED TO BE SHOWN -->
+                <tr>
+                    <th style="padding-left: 2.5%;"> Step 2:
+                                
+                        Please select a Type (Contact OR Lead) to whom you wanted to send&nbsp;
+                        <apex:outputpanel id="default-panel">
+                            <div id="default-text" style="{!IF(AND(NOT(sms), NOT(voicemailvalue)),'display:inline-block;','display:none;')}">
+                            SMS/Voice Mail
+                            </div>
+                        </apex:outputpanel>
+
+                        <apex:outputpanel id="sms-panel12"> 
+                        <div id="sms-div1" style="{!if(sms==true,'display:inline-block;','display:none;')}"> SMS </div> 
+                        </apex:outputpanel> 
+
+                        <apex:outputpanel id="voicemail-panel12">
+                        <div id="sms-div1" style="{!if(voicemailvalue==true,'display:inline-block;','display:none;')}"> Voice Mail </div> 
+                        </apex:outputpanel> 
+                    </th>                    
+                    <td style="padding-right: 11.5%;" colspan="2">
+                        <apex:selectList value="{!fieldsneed}" styleClass="slds-input slds-combobox__input"  id="Allflds" style="width:50%" size="1" multiselect="false">
+                            <apex:selectOption itemLabel="--None--" itemValue="0"/>
+                            <apex:selectOption itemLabel="Contact" itemValue="Contact"/>
+                            <apex:selectOption itemLabel="Lead" itemValue="Lead"/>
+                            <apex:actionSupport event="onchange" reRender="recordingid,referenceids,conldlookup,sms-panel2" status="spinnerStatus" oncomplete="return hideshowusr();" />
+                        </apex:selectList>
+                    </td>
+                </tr>
+                                                            
+                <!-- WHICH LOOKUPFIELDS NEED TO BE SHOWN -->
+                    <tr>
+                        <th style="padding-left: 2.5%;"> Step 3: Please select the fields to whom we need to send &nbsp;
+                            <apex:outputpanel id="default-panel1">
+                                <div id="default-text" style="{!IF(AND(NOT(sms), NOT(voicemailvalue)),'display:inline-block;','display:none;')}">
+                                    SMS/Voice Mail
+                                </div>
+                            </apex:outputpanel>
+
+                            <apex:outputpanel id="sms-panel13"> 
+                            <div id="sms-div1" style="{!if(sms==true,'display:inline-block;','display:none;')}"> SMS </div> 
+                            </apex:outputpanel> 
+
+                            <apex:outputpanel id="voicemail-panel13">
+                            <div id="sms-div1" style="{!if(voicemailvalue==true,'display:inline-block;','display:none;')}"> Voice Mail </div> 
+                            </apex:outputpanel> 
+                        </th>                    
+                        <td style="padding-right: 11.5%;" colspan="2">
+                            <apex:selectList value="{!selectedLookup}" styleClass="slds-input slds-combobox__input"  id="conldlookup" style="width:50%" size="1" multiselect="false">
+                                <apex:selectOptions value="{!Alllookupfields}"/>
+                                    
+                                <apex:actionSupport event="onchange" reRender="recordingid,referenceids,sms-panel2" status="spinnerStatus" oncomplete="return hideshowusr();"/>
+                            </apex:selectList>
+                        </td>
+                    </tr>                                                       
+                                                                            
+                <!-- SMS TEMPLATE NAME rendered="{!sms}" -->
+                <tr>           
+                    <th style="padding-left: 2.5%;">
+                        <apex:outputpanel id="sms-panel1">
+                            <div id="sms-div1" style="{!if(sms==true,'display:block;','display:none;')}"> Step *: Please Select the SMS Template </div> 
+                        </apex:outputpanel> 
+                    </th>
+                        
+                    <td style="padding-right: 11.5%;" colspan="2">
+                        <apex:outputpanel id="sms-panel2">
+                            <div id="sms-div2" style="{!if(sms==true,'display:block;','display:none;')}">           
+                                  
+                                <apex:selectList value="{!smstemplateID}" size="1" styleClass="slds-input slds-combobox__input" style="width:50%"  id="smsTemplateeditor" >                                                  
+                                    <apex:selectOptions value="{!SmsTemplates}"/>
+                                    <apex:actionSupport action="{!AllSmsTemplate}"  event="onchange" reRender="sms-panel2"/>
+                                </apex:selectList>
+                            </div>
+                        </apex:outputpanel>            
+                    </td>          
+                </tr>
+                <!-- SMS TEMPLATE BODY -->
+                <tr>
+                     <!-- <th style="padding-left: 2.5%;">
+                        <apex:outputpanel id="sms-panel3">
+                            <div id="sms-div3" style="{!if(sms==true,'display:block;','display:none;')}"> Step *: SMS template body
+                            </div>
+                        </apex:outputpanel>
+                    </th>-->
+                    <td style="padding-right: 11.5%;" colspan="2">
+                        <apex:outputPanel id="pnlEmailData">
+                            <div id="sms-div4" style="{!if(sms==true,'display:block;','display:none;')}">
+                                <script type="text/javascript">
+                                    //this can also be accomplished by using an apex:actionSupport on the trigger element, calling the same function "on demand"
+                                    $(function()
+                                    {
+                                        reloadCKEditor();
+                                    })
+                                </script>    
+                                <!-- <apex:inputtextarea id="text_area_field" styleClass="ckeditor"  richtext="false" value="{!smstemplateBody}" />
+                                    <apex:inputHidden id="hidden_text_area_field" value="{!smstemplateBody}"/> -->
+                            </div>
+                        </apex:outputPanel>
+                    </td>
+                </tr>
+
+                <!-- </table> -->
+                <!-- FIELD NAMES -->
+                <tr>
+                    <th style="padding-left: 2.5%;"> Step 4: Select User Reference fields based on the above selected type</th>
+                    
+                    <td style="padding-right: 11.5%;" colspan="2">
+                        <apex:selectList styleClass="slds-input slds-combobox__input" style="width:50%"   value="{!selectedField}" size="1" id="referenceids">
+                            <apex:selectOptions value="{!SobjectFieldNames}"/>
+                            <apex:actionSupport event="onchange" reRender="recordingid,fldsuser,j_id0:forms:j_id32:onrrows:0:fldsoners,forms,onrrows,stylesform,validationscript" status="spinnerStatus" oncomplete="return changestylebtn();">        
+                            </apex:actionSupport>
+                        </apex:selectList>
+                    </td>
+                </tr>
+
+                <tr id="firstonrrow">
+                    <th style="padding-left: 2.5%;"> 
+                        <apex:outputpanel id="sms-panel5">
+                            <div id="sms-div5" style="{!if(sms==false,'display:block;','display:none;')}">
+                                Step 4A: Select Recording number which you want to send
+                            </div>
+                        </apex:outputpanel>
+                    </th>
+                    
+                    <td >
+                        <apex:outputpanel id="sms-panel6">
+                            <div id="sms-div6" style="{!if(sms==false,'display:block;','display:none;')}">
+                                <apex:selectList styleClass="slds-input slds-combobox__input" style="width:50%" value="{!Recordingnumbers}" size="1" multiselect="false" id="recordingnumbers">
+                                    <apex:selectOptions value="{!Allrecornumber}"/>
+                                    <apex:actionSupport event="onchange" reRender="recordingid,fldsuser,j_id0:forms:j_id32:onrrows:0:fldsoners,forms,onrrows,stylesform,validationscript" status="spinnerStatus" oncomplete="return changestylebtn();">
+                                    </apex:actionSupport>
+                                </apex:selectList>
+                            </div>
+                        </apex:outputpanel>
+                    </td>
+                    
+                    <td></td>
+                </tr>
+
+                <tr>
+                    <th style="padding-left: 2.5%;" id = 'orid'> OR </th>
+                    <td style="padding-right: 11.5%;" colspan="2"></td>
+                </tr>
+
+                <!--SELECT THE USER -->
+                <tr>
+                    <th style="padding-left: 2.5%;" id = 'Usernameheader'> Step 4: Select Fixed users for the above Selected type</th>
+                    
+                    <td style="padding-right: 11.5%;" colspan="2">
+                        <apex:selectList styleClass="slds-input slds-combobox__input" style="width:50%"  value="{!selectedUser}" size="1" id="fldsuser">
+                            <apex:selectOptions value="{!SobjectUserNames1}"/>
+                            <apex:actionSupport event="onchange" reRender="recordingid" status="spinnerStatus" oncomplete="return hideshowusr();">
+                                <!--<apex:param assignto="{!selectedUser}" name="selecteduser" value=""/>-->
+                            </apex:actionSupport>
+                        </apex:selectList>
+                    </td>
+                </tr>
+
+                <!-- RECORDINGS -->
+                <tr>
+                    <th style="padding-left: 2.5%;" id='recordings'>
+                        <apex:outputpanel id="voicemail-panel1">
+                            <div id="voicemail-div1" style="{!if(voicemailvalue==true,'display:block;','display:none;')}"> 
+                                Step 4A: Select Recordings 
+                            </div> 
+                        </apex:outputpanel>
+                    </th>
+                    <td style="padding-right: 11.5%;" colspan="2">
+                        <apex:outputpanel id="voicemail-panel2">
+                            <div id="voicemail-div1" style="{!if(voicemailvalue==true,'display:block;','display:none;')}"> 
+                                <apex:selectList size="1" styleClass="slds-input slds-combobox__input" id="recordingid"  value="{!selectedRecordingName}" style="width:50%">
+                                    <apex:selectOptions value="{!Allrecornumber}"/>
+                                    <apex:actionSupport event="onchange"  reRender="callerid,voicemail-panel1,voicemail-panel2" status="spinnerStatus" oncomplete="return hideshowusr();"/>
+                                </apex:selectList>
+                            </div>
+                        </apex:outputpanel>
+                    </td>
+                </tr>
+
+                <!-- OPTION SCHEDULE -->
+                <tr>
+                    <th id="OD" style="padding-left: 2.5%;text-align: left;"> 
+                        <apex:outputpanel id="voicemail-panel3">
+                            <div id="voicemail-div1"> 
+                                Step 5: Option Schedule
+                            </div>
+                        </apex:outputpanel>
+                    </th>
+                    <td style="padding-right: 11.5%;" colspan="2">
+                        <apex:outputpanel id="voicemail-panel4">
+                            <div id="voicemail-div1"> 
+                                <apex:selectList id="OS" size="1" styleClass="slds-input slds-combobox__input"  value="{!selectedOptionschedule}" style="width:50%">
+                                    <apex:selectOptions value="{!ScheduleList}"/>
+                                   <apex:actionSupport event="onchange" action="{!enableFutureCallFields}" reRender="forms,btnclassremove,validationscript" status="spinnerStatus" oncomplete="hideshowusr();"/>
+                                </apex:selectList>
+                            </div>
+                        </apex:outputpanel>
+                    </td>
+                </tr>
+
+                <!-- SCHEDULE FREQUENCY -->
+                <tr>
+                    <th id="SF" style="padding-left: 4.9%; display: none;">
+                        Step 5A: Schedule Frequency
+                    </th>
+                    <td style="padding-right: 11.5%;" colspan="2" id="SF_td">
+                        <apex:selectList id="scdlFreqVal" styleClass="slds-input slds-combobox__input" 
+                                         size="1" value="{!selectedFreqValue}" style="width:50%;display: none;">
+                            <apex:selectOption itemValue="0" itemLabel="--None--"/>
+                            <apex:selectOptions value="{!IF(radioValues=='Voicemail', ScheduleFreqValueListVoiceMail, ScheduleFreqValueListSMS)}" />
+                            <apex:actionSupport event="onchange" reRender="scdlFreqVal" 
+                                                status="spinnerStatus" oncomplete="hideshowusr();" />
+                        </apex:selectList>
+                    </td> 
+                </tr>
+                <!-- <tr>
+                    <th id="SF" style="padding-left: 4.9%; text-align: left; display: none;"> Step 5A: Schedule Frequency </th>
+                    <td style="padding-right: 11.5%;" colspan="2" id="SF_td">
+                        <apex:selectList id="scdlFreq" styleClass="slds-input slds-combobox__input"  size="1" value="{!selectedFreq}" style="display:none;width:50%">
+                            <apex:selectOptions value="{!ScheduleFreqList}"/>
+                            <apex:actionSupport event="onchange" reRender="slctdDate" status="spinnerStatus" oncomplete="hideshowusr();"/>
+                        </apex:selectList>
+                    </td> 
+                </tr> -->
+
+                <tr>
+                    <th id="SD" style="padding-left: 4.9%;text-align: left; display: none;">Step 5B: Schedule Date-Time</th>
+                    <td  id="SD_td">    
+                        <apex:input type="number" id="slctdDate" value="{!selectedDate1}" style="display:none;width:50%;border-radius: .25rem;border: 1px solid #dddbda;padding: 0 1rem 0 .75rem;line-height: 1.875rem;"/>
+                    </td>
+                </tr>
+
+                <!-- <tr>
+                    <th id="SD" style="padding-left: 4.9%;text-align: left; display: none;">Step 5B: Schedule Date-Time</th>
+                    <td  id="SD_td">    
+                        <apex:input type="date" id="slctdDate" value="{!selectedDate}" style="display:none;width:50%;border-radius: .25rem;border: 1px solid #dddbda;padding: 0 1rem 0 .75rem;line-height: 1.875rem;
+                                                                                            min-height: calc(1.875rem + (1px * 2));"/>
+                        
+                        <apex:selectList id="STL" size="1" styleClass="slds-input slds-combobox__input"  value="{!selectedTime}" style="display:none;width:30%" >
+                            <apex:selectOptions value="{!allAvailableTimes}"/>
+                        </apex:selectList>
+                    </td>
+                </tr> -->
+
+                <!-- <tr>
+                    <td colspan="3" id="help_td" style="padding-left: 4.9%;text-align: left;">
+                        <div id="rcorners2">
+                            <ul>
+                                <li>Daily : Send vm daily starting from selected date and time</li><br/>
+                                <li>Weekly : Send vm weekly(week days Calculated automatically) starting from selected date and time</li><br/>
+                                <li>Monthly : Send vm monthly(months Calculated automatically) starting from selected date and time</li><br/>
+                                <li>Year : Send vm yearly(years Calculated automatically) starting from selected date and time</li><br/>
+                            </ul>
+                        </div>
+                    </td>
+                </tr> -->
+
+            </table>  
+
+            <br/>
+            <br/>
+
+            <apex:outputPanel style="font-weight: bold;font-size:15px;font-family:Salesforce Sans;">
+                Please use below filter conditions to filter records which is eligible for automation (Ex: If OpportunityAmount > 1000)
+            </apex:outputPanel>
+            <br/>
+            <br/>
+            <!-- FILTER CODE STARTS FROM HERE -->
+            <apex:pageBlockTable value="{!tableRows}" var="row" id="table">
+
+            <!-- Field Name Dropdown -->
+            <apex:column headerValue="Field Name">
+                <apex:selectList value="{!row.fieldName}" style="width: -webkit-fill-available;" size="1" disabled="{!row.index > enabledRows}">
+                    <apex:selectOptions value="{!fieldOptions}" />
+                    <apex:actionSupport event="onchange" action="{!updateRow}" rerender="table" >
+                        <apex:param name="rowIndex" value="{!row.index}" assignTo="{!rowIndex}" />
+                    </apex:actionSupport>
+                </apex:selectList>
+            </apex:column>
+
+            <!-- Operator Dropdown -->
+            <apex:column headerValue="Operator">
+                <apex:outputPanel id="Operator">
+                    <apex:selectList value="{!row.selectedOperator}" size="1" style="width: -webkit-fill-available;" disabled="{!row.index > enabledRows}">
+                        <apex:selectOptions value="{!row.operators}" />
+                    </apex:selectList>
+                </apex:outputPanel>
+            </apex:column>
+
+            <!-- Value Field -->
+            <apex:column headerValue="Value">
+                <apex:outputPanel id="valuePanel">
+                    <apex:inputText value="{!row.selectedValue}" style="width: -webkit-fill-available;" rendered="{!ISNULL(row.fieldType) || row.fieldType == ''}" disabled="{!row.index > enabledRows}" />
+                    <apex:inputText value="{!row.selectedValue}" style="width: -webkit-fill-available;" rendered="{!row.fieldType == 'text' || row.fieldType == 'number'}" disabled="{!row.index > enabledRows}">
+                        <!-- <apex:actionSupport event="onchange" action="{!enableNextRow}" rerender="table">
+                            <apex:param name="rowIndex" value="{!row.index}" assignTo="{!rowIndex}" />
+                        </apex:actionSupport> -->
+                    </apex:inputText>
+
+                    <apex:input type="date" style="width: -webkit-fill-available;"
+                    value="{!filterDate1}"
+                    rendered="{!row.fieldType = 'date' && row.index == 0}"
+                    onchange="updatevalueJS(this.value, {!JSENCODE(row.indexAsString)})"
+                    disabled="{!row.index > enabledRows}" ></apex:input>
+
+                    <apex:input type="date" style="width: -webkit-fill-available;"
+                    value="{!filterDate2}"
+                    rendered="{!row.fieldType = 'date' && row.index == 1}"
+                    onchange="updatevalueJS(this.value, {!JSENCODE(row.indexAsString)})"
+                    disabled="{!row.index > enabledRows}" ></apex:input>
+
+                    <apex:input type="date" style="width: -webkit-fill-available;"
+                    value="{!filterDate3}"
+                    rendered="{!row.fieldType = 'date' && row.index == 2}"
+                    onchange="updatevalueJS(this.value, {!JSENCODE(row.indexAsString)})"
+                    disabled="{!row.index > enabledRows}" ></apex:input>
+
+                    <apex:input type="date" style="width: -webkit-fill-available;"
+                    value="{!filterDate4}"
+                    rendered="{!row.fieldType = 'date' && row.index == 3}"
+                    onchange="updatevalueJS(this.value, {!JSENCODE(row.indexAsString)})"
+                    disabled="{!row.index > enabledRows}" ></apex:input>
+
+                    <apex:input type="date" style="width: -webkit-fill-available;"
+                    value="{!filterDate5}"
+                    rendered="{!row.fieldType = 'date' && row.index == 4}"
+                    onchange="updatevalueJS(this.value, {!JSENCODE(row.indexAsString)})"
+                    disabled="{!row.index > enabledRows}" ></apex:input>
+
+                    <apex:input type="date" style="width: -webkit-fill-available;"
+                    value="{!filterDate6}"
+                    rendered="{!row.fieldType = 'date' && row.index == 5}"
+                    onchange="updatevalueJS(this.value, {!JSENCODE(row.indexAsString)})"
+                    disabled="{!row.index > enabledRows}" ></apex:input>
+
+                    <apex:inputCheckbox value="{!row.selectedValue}"  rendered="{!row.fieldType == 'checkbox'}" disabled="{!row.index > enabledRows}">
+                        <apex:actionSupport event="onchange" action="{!enableNextRow}" rerender="table">
+                            <apex:param name="rowIndex" value="{!row.index}" assignTo="{!rowIndex}" />
+                        </apex:actionSupport>
+                    </apex:inputCheckbox>
+
+                    <!-- Dropdown for Picklist -->
+                    <apex:selectList value="{!row.selectedValue}" size="1" style="width: -webkit-fill-available;" rendered="{!row.fieldType == 'picklist'}" disabled="{!row.index > enabledRows}">
+                        <apex:selectOptions value="{!row.picklistOptions}" />
+                        <apex:actionSupport event="onchange" action="{!enableNextRow}" rerender="table">
+                            <apex:param name="rowIndex" value="{!row.index}" assignTo="{!rowIndex}" />
+                        </apex:actionSupport>
+                    </apex:selectList>
+                </apex:outputPanel>
+            </apex:column>
+            
+            
+            <!-- Clear Condition Button -->
+            <apex:column headerValue="Clear Condition">
+                <apex:commandButton value="X" action="{!clearFilter}" rerender="table" disabled="{!row.index > enabledRows}">
+                    <apex:param name="selectedRowIndex" value="{!row.index}" assignTo="{!selectedRowIndex}" />
+                </apex:commandButton>
+            </apex:column>
+
+
+        </apex:pageBlockTable>
+        <apex:actionFunction name="updatevalue" action="{!enableNextRow}" reRender="table" status="myStatus">
+            <apex:param assignTo="{!rowselectedvalue}" name="first1" value="" />
+            <apex:param assignTo="{!rowIndex}" name="rowIndex" value="" />
+
+        </apex:actionFunction>
+        </apex:pageBlock>
+
+        <apex:actionFunction name="saveData();" action="{!saveData}" rendered="">    
+        </apex:actionFunction>
+        
+    </apex:form>
+    <apex:includeScript value="{!$Resource.JavaScrpit}"/>
+
+    <apex:outputPanel id="btnclassremove">
+        <script>
+            function updatevalueJS(datevalue, rowIndex) {
+            console.log('rowIndex::>>>'+rowIndex);
+            console.log('datevalue::>>>'+datevalue);
+            let rowIndexInt = parseInt(rowIndex, 10); // Convert to integer
+
+            updatevalue(datevalue,rowIndexInt);
+        }
+                //CK EDITOR FOR SMS TEMPLATE
+                function reloadCKEditor()
+            {                       
+                //ckeditor library does the trick by calling this method. 
+                //It takes as parameter a string representing the style class to reach for, in order to enable our text area to be really #rich!                                                 
+                CKEDITOR.replaceAll('ckeditor');    
+            }
+
+            function setCKEditorValues()
+            {
+                //here we assign to our hidden textarea the value of the visible one  
+                $("[id$='hidden_text_area_field']").val(CKEDITOR.instances[$("[id$='text_area_field']").attr('id')].getData()); 
+                
+            }  
+
+            $(document).ready(function() {
+                //$('[id*="loader"]').hide();
+                // $('[id*="help_td"]').hide();
+                $('[id*="referenceids"]').prop( "disabled", true );
+                $('[id*="fldsuser"]').prop( "disabled", true );
+                $('[id*="recordingid"]').prop( "disabled", true );
+                $('[id*="fldsuser"]').prop( "disabled", true );
+                $('[id*="OS"]').prop( "disabled", true );
+                $('[id*="thirdonrrow"]').hide();
+                $('[id*="fldsoners"]').prop( "disabled", true );
+                $('[id*="fldsoners1"]').prop( "disabled", true );
+                $('[id*="addonrs"]').prop( "disabled", true );
+                $('[id*="recordingnumbers"]').prop( "disabled", true );
+                $('[id*="conldlookup"]').prop( "disabled", true );
+                $('[id*="recordingnumbers"]').prop( "disabled", true );
+                $('[id*="conldlookup"]').prop( "disabled", true );    
+                $('[id*="secondonrrow"]').hide();
+                $('.btn').removeClass('btn');
+                $('[id*="objects"]').prop( "disabled", true );
+            });
+        </script>
+    </apex:outputPanel>
+
+
+    <apex:outputPanel id="validationscript">
+        
+        <script>
+        
+        $('[id*="submit"]').click(function(){
+            
+            // $('[id*="submit"]').prop( "disabled", true);
+            
+            var obj =  $('[id*="objects"]').val();
+            var usr = $('[id*="fldsoners"]').val();
+            var rec1 = $('[id*="fldsoners1"]').val();
+            var singleusr = $('[id*="fldsuser"]').val();
+            var singleusrrec = $('[id*="recordingid"]').val();
+            var schfreq = $('[id*="OS"]').val();
+            // var freqsch = $('[id*="scdlFreq"]').val();
+            var freqsch = $('[id*="scdlFreqVal"]').val();
+            var schdate = $('[id*="slctdDate"]').val();
+            // console.log('----------' +freqsch);
+            var conldlookup = $('[id*="conldlookup"]').val();
+            var recordingnumbers = $('[id*="recordingnumbers"]').val();
+            //alert(recordingnumbers);
+            var referencefield = $('[id*="referenceids"]').val();
+            
+            var selectedDate = new Date();
+            var month = ("0" + (selectedDate.getMonth() + 1)).slice(-2);
+            var day = ("0" + selectedDate.getDate()).slice(-2);
+            var year = selectedDate.getFullYear();
+            var currdate  = [day, month, year].join('-');
+            // console.log(currdate);
+            
+            var isValid = true;
+            var isValidtime = true;
+            var msg = '';
+            
+            //If SMS is selected
+            if(radioValues == 0)
+            {
+                msg = 'Please fill mandatory fields to submit';
+            }
+            else if(radioValues == 'SMS')
+            {
+                if(singleusr == 0 && referencefield == 0)
+                {
+                    $('[id*="fldsuser"]').css({"border-color": "Red"});  
+                    $('[id*="referenceids"]').css({"border-color": "Red"});   
+                }
+            }
+                else
+                {
+                    //If Voicemail is selected
+                    if((singleusr == 0 && referencefield == 0) || (singleusrrec == 0 && recordingnumbers == 0)) 
+                    {
+                        isValid = false;
+
+                        msg = 'Please fill mandatory fields to submit';
+                        
+                        $('[id*="fldsuser"]').css({"border-color": "Red"});  
+                        $('[id*="recordingid"]').css({"border-color": "Red"});
+                        $('[id*="recordingnumbers"]').css({"border-color": "Red"});  
+                        $('[id*="referenceids"]').css({"border-color": "Red"});   
+                        
+                    }
+                    else
+                    {
+                        $('[id*="fldsuser"]').css({"border-color": "DCDCDC"});  
+                        $('[id*="recordingid"]').css({"border-color": "DCDCDC"});
+                        $('[id*="recordingnumbers"]').css({"border-color": "DCDCDC"});  
+                        $('[id*="referenceids"]').css({"border-color": "DCDCDC"});    
+                    }
+                    
+                    
+                    if(schfreq == 0)
+                    {
+                        isValid = false;
+                        
+                        $('[id*="OS"]').css({"border-color": "Red"});
+                    } 
+                    else 
+                    {
+                        $('[id*="OS"]').css({"border-color": "#DCDCDC"});
+                    }
+                }
+            
+            // For Both SMS and Voicemail    
+            if(conldlookup == 0 && (obj == 'Opportunity' || obj == 'Task' || obj == 'CampaignMember'))
+            {
+                isValid = false;
+                msg = 'Please fill mandatory fields to submit';
+                $('[id*="conldlookup"]').css({"border-color": "Red"});  
+            }
+            else
+            {
+                $('[id*="conldlookup"]').css({"border-color": "#DCDCDC"});
+            }
+            
+            if(obj == 0 )
+            {
+                isValid = false;
+                
+                $('[id*="objects"]').css({"border-color": "Red"});
+            }
+            else
+            {
+                $('[id*="objects"]').css({"border-color": "#DCDCDC"});
+            }
+            
+            
+            if(schfreq == "Future Call" && (schdate <= 0 || schdate == ''))
+            {
+                isValid = false;
+                msg = 'value cannot be empty And less or equals to 0.'
+                $('[id*="slctdDate"]').css({"border-color": "Red"});
+            }
+            else
+            {
+                $('[id*="slctdDate"]').css({"border-color": "DCDCDC"});
+            } 
+
+            if(schfreq == "Future Call" && (freqsch == '0'))
+            {
+                isValid = false;
+                msg = 'Please fill mandatory fields to submit'
+                // $('[id*="scdlFreq"]').css({"border-color": "Red"});
+                $('[id*="scdlFreqVal"]').css({"border-color": "Red"});
+                // $('[id*="slctdDate"]').css({"border-color": "Red"});
+            }
+            else
+            {
+                // $('[id*="scdlFreq"]').css({"border-color": "#DCDCDC"});
+                $('[id*="scdlFreqVal"]').css({"border-color": "#DCDCDC"});
+                // $('[id*="slctdDate"]').css({"border-color": "DCDCDC"});
+            } 
+
+            
+            if(isValid == true && isValidtime == true)
+            {
+                // setTimeout(function() {
+                // console.log('All validations passed. Executing Apex command.');
+                //      executeApexCommand();
+                // }, 3000); 
+
+                return true;
+            } else if(isValid == false)
+            {
+                // $('[id*="submit"]').prop( "disabled", false);
+                alert(msg);
+            } else if(isValidtime == false)
+            {
+                // $('[id*="submit"]').prop( "disabled", false);
+                alert('Please fill mandatory fields to submit');
+            }
+            
+            return false;
+            
+        });
+        </script>
+    </apex:outputPanel>
+
+    <script>
+
+        //Added by Yugandhara
+        var radioValues;
+        $( "[id*=radioValues]" ).click(function() {
+            radioValues = $('[id*="radioValues"]:checked').val();   
+        });
+
+        $('[id*="removerow1"]').click(function(){
+            $('[id*="secondonrrow"]').hide();
+            showhideaddbtn();
+            return false;
+        }); 
+
+        $('[id*="removerow2"]').click(function(){
+            $('[id*="thirdonrrow"]').hide();
+            showhideaddbtn();
+            return false;
+        }); 
+
+
+        function removesecond()
+        {
+            $('[id*="secondonrrow"]').hide();
+            $('[id*="fldsoners2"]').val("0") ;
+            $('[id*="fldsoners3"]').val("0");
+            showhideaddbtn();
+        }
+
+        function removethird()
+        {
+            $('[id*="thirdonrrow"]').hide();
+            $('[id*="fldsoners4"]').val("0") ;
+            $('[id*="fldsoners5"]').val("0");
+            showhideaddbtn();    
+        }
+
+        function addrow()
+        {
+            var query = $('#secondonrrow');
+            var isVisible = query.is(':visible');
+            var userval = $('[id*="fldsoners"]').val();
+            var userval2 = $('[id*="fldsoners2"]').val();
+            var userval3 = $('[id*="fldsoners4"]').val();
+            $('#element option[value="no"]').attr("selected", "selected");
+            
+            if(userval == 0 )
+            {
+                $('[id*="fldsoners1"]').prop( "disabled", true );
+            }
+            if(userval2 == 0 )
+            {
+                $('[id*="fldsoners3"]').prop( "disabled", true );
+                
+            } if(userval3 == 0)
+            {
+                $('[id*="fldsoners5"]').prop( "disabled", true );
+            }
+            
+            if (isVisible === true) 
+            {
+                $('#thirdonrrow').show();
+            }
+            $('#secondonrrow').show();
+            showhideaddbtn();
+        }
+
+        function showhideaddbtn()
+        {
+            var row2= $('#secondonrrow');
+            var isVisible2 = row2.is(':visible');
+            var row3= $('#thirdonrrow');
+            var isVisible3 = row3.is(':visible');
+            
+            if(isVisible2 === true && isVisible3 === true)
+            {
+                $('[id*="addonrs"]').hide();
+            } else 
+            {
+                $('[id*="addonrs"]').show();
+            }
+        }
+
+        function addonerrows1()
+        {
+            addonerrow();
+            return false;
+        }
+
+        function changestylebtn()
+        {        
+            $('[id*="submit"]').removeClass('btn');
+            $('[id*="cancl"]').removeClass('btn');
+            $('[id*="removerow"]').removeClass('btn');
+            $('[id*="thirdonrrow"]').hide();
+            $('[id*="secondonrrow"]').hide();
+            
+            var userval = $('[id*="fldsoners"]').val();
+            var row2val = $('[id*="fldsoners2"]').val();
+            var row3val = $('[id*="fldsoners4"]').val();
+            
+            if(userval == 0 )
+            {
+                $('[id*="fldsoners1"]').prop( "disabled", true );
+            } 
+            else 
+            {
+                $('[id*="fldsoners1"]').prop( "disabled", false);
+            }
+            
+            if(row2val == 0 )
+            {
+                $('[id*="fldsoners3"]').prop( "disabled", true );
+            }
+            else 
+            {
+                $('[id*="fldsoners3"]').prop( "disabled", false);
+            }
+            
+            if(row3val == 0)
+            {
+                $('[id*="fldsoners5"]').prop( "disabled", true );
+            } 
+            else
+            {
+                $('[id*="fldsoners5"]').prop( "disabled", false);
+            }
+            
+            $('.btn').removeClass('btn');
+            
+            var row2= $('#secondonrrow');
+            var isVisible2 = row2.is(':visible');
+            var row3= $('#thirdonrrow');
+            var isVisible3 = row3.is(':visible');
+            
+            if(row2val != 0 && row2val !='' && row2val !=null)
+            {
+                $('#secondonrrow').show();
+            }
+            
+            if(row3val != 0 && row3val !='' && row3val !=null )
+            {
+                $('#thirdonrrow').show();
+            }
+            hideshowusr();
+            return false;
+        }
+
+        function showSpinner()
+        {
+            $('.slds-spinner_container').removeClass('slds-hide');
+            $('.slds-spinner_container').addClass('slds-show');  
+            var winWidth = $(document).width();
+            var winHeight = $(document).height();
+            $('.slds-spinner_container').css({ 'width': winWidth,'height': winHeight });
+        }
+
+        function hideSpinner()
+        {                 
+            $('.slds-spinner_container').removeClass('slds-show');
+            $('.slds-spinner_container').addClass('slds-hide');    
+        }
+
+        function showSDSF()
+        {
+            document.getElementById("SD").style.display="block";
+            document.getElementById("SF").style.display="block";
+            //("#SF").show();
+            //alert('this');
+        }
+
+        function hide_TwoTd()
+        {
+            debugger;
+            document.getElementById("SD_td").style.display="none";
+            document.getElementById("SF_td").style.display="none";
+            // document.getElementById("help_td").style.display="none";
+            document.getElementById("SD").style.display="none";
+            document.getElementById("SF").style.display="none";
+            document.getElementById("j_id0:forms:j_id32:objects").value = 0;
+            document.getElementById('j_id0:forms:j_id32:OS').value =  0;
+        }
+
+        function hideSDSF()
+        {
+            var x = document.getElementById("j_id0:forms:j_id32:OS").value;
+            // document.getElementById("help_td").style.display="none";
+            // console.log(x);
+            if(x == 'Now')
+            {
+                document.getElementById("SD").style.display="none";
+                document.getElementById("SF").style.display="none";
+                // document.getElementById("help_td").style.display="none";
+                // $('[id*="help_td"]').hide();
+            }
+            else if(x == 'Future Call')
+            {
+                // console.log('X call');
+                document.getElementById("SD").style.display="block";
+                document.getElementById("SF").style.display="block";
+                // document.getElementById("help_td").style.display="block";
+                // $('[id*="help_td"]').css({"padding-left": "4.9%","text-align": "left","width":"100%"});  
+            }
+            
+            //("#SF").show();
+            //alert('this');
+            
+            if($('[id*="fldsoners2"]').val() != "0" && $('[id*="fldsoners2"]').val() != null)
+            {
+                $('#secondonrrow').show();
+            }
+            if($('[id*="fldsoners4"]').val() != "0" && $('[id*="fldsoners4"]').val() != null)
+            {
+                $('#thirdonrrow').show();
+            }
+        }
+
+        function hideUsr()
+        {
+            var x = document.getElementById("j_id0:forms:j_id32:referenceids").value;
+            if(x == 0)
+            {
+                document.getElementById("j_id0:forms:j_id32:fldsuser").style.display="Block";
+                document.getElementById("Usernameheader").style.display="Block";
+                document.getElementById("Usernameheader").style.paddingLeft = "5%";
+                document.getElementById("orid").style.display="Block";
+                document.getElementById("orid").style.paddingLeft = "4%";
+            } else 
+            {
+                document.getElementById("j_id0:forms:j_id32:fldsuser").style.display="none";
+                document.getElementById("Usernameheader").style.display="none";
+                document.getElementById("orid").style.display="none";
+            }
+        }
+
+
+        function hideshowusr()
+        {
+            $('[id*="objects"]').prop( "disabled", false );
+            var x = $('[id*="referenceids"]').val(); 
+            var objs =$('[id*="objects"]').val(); 
+            var fldusrs =$('[id*="fldsuser"]').val(); 
+            var allflds =$('[id*="Allflds"]').val(); 
+            var subflds =$('[id*="referenceids"]').val(); 
+            var fldusrs =$('[id*="fldsuser"]').val(); 
+            var recrd =$('[id*="recordingid"]').val(); 
+            var firstfilter = $('[id*="theTextInput0"]').val(); ;
+            var secondfilter =$('[id*="theTextInput1"]').val(); 
+            var thirdfilter =$('[id*="theTextInput2"]').val(); 
+            var fourthfilter =$('[id*="theTextInput3"]').val();
+            var fifthfilter =$('[id*="theTextInput4"]').val(); 
+            var fldvalue  =$('[id*="referenceids"]').val(); 
+            var userval = $('[id*="fldsoners1"]').val();
+            var userval2 = $('[id*="fldsoners3"]').val();
+            var userval3 = $('[id*="fldsoners5"]').val();
+            var userval0 = $('[id*="fldsoners"]').val();
+            var freqsch = $('[id*="OS"]').val();
+            
+            if(freqsch == 'Future Call')
+            {
+                // console.log('future call 1033');
+                $('[id*="scdlFreqVal"]').show();
+                // $('[id*="scdlFreq"]').show();
+                $('[id*="STL"]').show();
+                $('[id*="slctdDate"]').show();
+            } 
+            else 
+            {
+                // console.log('hide date');
+                $('[id*="scdlFreqVal"]').hide();
+                // $('[id*="scdlFreq"]').hide();
+                $('[id*="STL"]').hide();    
+                $('[id*="slctdDate"]').hide();
+            }
+            
+            // document.getElementById("help_td").style.display="none";
+            var freq =$('[id*="OS"]').val(); 
+            // document.getElementById("help_td").style.display="none";
+            // console.log(x);
+            if(freq  == 'Now')
+            {
+                document.getElementById("SD").style.display="none";
+                document.getElementById("SF").style.display="none";
+                // document.getElementById("help_td").style.display="none";
+                // $('[id*="help_td"]').hide();
+            }
+            
+            if(freq  == 'Future Call')
+            {
+                // console.log('1062 future');
+                document.getElementById("SD").style.display="block";
+                document.getElementById("SF").style.display="block";
+                // document.getElementById("help_td").style.display="block";
+                // $('[id*="help_td"]').css({"padding-left": "4.9%","text-align": "left","width":"100%"});
+            }
+            
+            
+            if(fldvalue != 0 && fldvalue != '' && fldvalue != null)
+            {
+                $('[id*="fldsoners"]').prop( "disabled", false);
+                if(userval0 == 0)
+                {
+                    $('[id*="fldsoners1"]').prop( "disabled", true);
+                } 
+                else 
+                {
+                    $('[id*="fldsoners1"]').prop( "disabled", false);
+                }
+                $('[id*="addonrs"]').prop( "disabled", false);
+            } 
+            else 
+            {
+                $('[id*="fldsoners"]').prop( "disabled", true);
+                $('[id*="fldsoners"]').val("0");
+                $('[id*="fldsoners1"]').val("0");
+                $('[id*="fldsoners1"]').prop( "disabled", true);
+                $('[id*="addonrs"]').prop( "disabled", true);
+            }
+            if(firstfilter != '')
+            {
+                $('[id*="flds1"]').prop( "disabled", false);
+                $('[id*="theTextInput1"]').prop( "disabled", false);
+            } 
+            else 
+            {
+                $('[id*="flds1"]').prop( "disabled", true);
+                $('[id*="flds2"]').prop( "disabled", true);
+                $('[id*="flds3"]').prop( "disabled", true);
+                $('[id*="flds4"]').prop( "disabled", true);
+                $('[id*="flds5"]').prop( "disabled", true);
+                
+                $('[id*="theTextInput1"]').prop( "disabled", true);
+                $('[id*="theTextInput2"]').prop( "disabled", true);
+                $('[id*="theTextInput3"]').prop( "disabled", true);
+                $('[id*="theTextInput4"]').prop( "disabled", true);
+                $('[id*="theTextInput5"]').prop( "disabled", true);
+                
+                $('[id*="theTextInput1"]').val('');
+                $('[id*="theTextInput2"]').val('');
+                $('[id*="theTextInput3"]').val('');
+                $('[id*="theTextInput4"]').val('');
+                $('[id*="theTextInput5"]').val('');
+                
+            }
+            
+            if(secondfilter != '')
+            {
+                $('[id*="flds2"]').prop( "disabled", false);
+                $('[id*="theTextInput2"]').prop( "disabled", false);
+            } 
+            else 
+            {
+                $('[id*="flds2"]').prop( "disabled", true);
+                $('[id*="flds3"]').prop( "disabled", true);
+                $('[id*="flds4"]').prop( "disabled", true);
+                $('[id*="flds5"]').prop( "disabled", true);
+                
+                $('[id*="theTextInput2"]').prop( "disabled", true);
+                $('[id*="theTextInput3"]').prop( "disabled", true);
+                $('[id*="theTextInput4"]').prop( "disabled", true);
+                $('[id*="theTextInput5"]').prop( "disabled", true);
+                
+                $('[id*="theTextInput2"]').val('');
+                $('[id*="theTextInput3"]').val('');
+                $('[id*="theTextInput4"]').val('');
+                $('[id*="theTextInput5"]').val('');
+            }
+            
+            if(thirdfilter != '')
+            {
+                $('[id*="flds3"]').prop( "disabled", false);
+                $('[id*="theTextInput3"]').prop( "disabled", false);
+            } 
+            else
+            {
+                $('[id*="flds3"]').prop( "disabled", true);
+                $('[id*="flds4"]').prop( "disabled", true);
+                $('[id*="flds5"]').prop( "disabled", true);
+                
+                $('[id*="theTextInput3"]').prop( "disabled", true);
+                $('[id*="theTextInput4"]').prop( "disabled", true);
+                $('[id*="theTextInput5"]').prop( "disabled", true);
+                
+                $('[id*="theTextInput3"]').val('');
+                $('[id*="theTextInput4"]').val('');
+                $('[id*="theTextInput5"]').val('');
+            }
+            
+            if(fourthfilter != '')
+            {
+                $('[id*="flds4"]').prop( "disabled", false);
+                $('[id*="theTextInput4"]').prop( "disabled", false);
+            } 
+            else 
+            {
+                $('[id*="flds4"]').prop( "disabled", true);
+                $('[id*="flds5"]').prop( "disabled", true);
+                
+                $('[id*="theTextInput4"]').prop( "disabled", true);
+                $('[id*="theTextInput5"]').prop( "disabled", true);
+                
+                $('[id*="theTextInput4"]').val('');
+                $('[id*="theTextInput5"]').val('');
+            }
+            
+            if(fifthfilter != '')
+            {
+                $('[id*="flds5"]').prop( "disabled", false);
+                $('[id*="theTextInput5"]').prop( "disabled", false);
+            } 
+            else 
+            {
+                $('[id*="flds5"]').prop( "disabled", true);
+                
+                $('[id*="theTextInput5"]').prop( "disabled", true);
+                
+                $('[id*="theTextInput5"]').val('');
+            }
+            
+            if(subflds == 0 && fldusrs == 0)
+            {
+                
+                $('[id*="recordingid"]').prop( "disabled", true);
+            } 
+            else if(objs != 0)
+            {
+                $('[id*="recordingid"]').prop( "disabled", false);
+                
+            }
+            
+            if(x == 0)
+            {
+                $('[id*="fldsuser"]').show();
+                document.getElementById("Usernameheader").style.display="Block";
+                document.getElementById("orid").style.display="Block";
+                document.getElementById("Usernameheader").style.paddingLeft = "5%";
+                document.getElementById("orid").style.paddingLeft = "4%";
+                //$('[id*="recordingid"]').prop( "disabled", false);
+                $('[id*="fldsoners"]').val("0") ;
+                $('[id*="fldsoners1"]').val("0") ;
+                $('[id*="fldsoners2"]').val("0") ;
+                $('[id*="fldsoners3"]').val("0") ;
+                $('[id*="fldsoners4"]').val("0") ;
+                $('[id*="fldsoners5"]').val("0") ;
+                $('[id*="recordingid"]').show();
+                $('[id*="recordings"]').show();
+                $('[id*="recordingnumbers"]').prop( "disabled", true );
+                $('[id*="recordingnumbers"]').val( "0" );
+            } 
+            else 
+            {
+                $('[id*="recordingnumbers"]').prop( "disabled", false );
+                $('[id*="recordingid"]').hide();
+                
+                $('[id*="fldsuser"]').hide();
+                document.getElementById("Usernameheader").style.display="none";
+                
+                $('[id*="recordings"]').hide();
+                $('[id*="orid"]').hide();
+                
+                $('[id*="recordingid"]').prop( "disabled", true);
+                $('[id*="recordingid"]').val( "0");
+                $('[id*="fldsuser"]').val( "0");
+            }
+            
+            if(objs == 0)
+            {
+                $('[id*="Allflds"]').prop( "disabled", true);
+                $('[id*="referenceids"]').prop( "disabled", true);
+                $('[id*="fldsuser"]').prop( "disabled", true);
+                $('[id*="flds0"]').prop( "disabled", true);
+                $('[id*="theTextInput0"]').prop( "disabled", true);
+                $('[id*="theTextInput0"]').val('');
+                $('[id*="recordingid"]').prop( "disabled", true);
+                $('[id*="conldlookup"]').prop( "disabled", false );
+                
+            } 
+            else if(objs == 'Contact' || objs == 'Lead')
+            {
+                $('[id*="Allflds"]').prop( "disabled", true);
+                $('[id*="Allflds"]').val( "0");
+                $('[id*="referenceids"]').prop( "disabled", false);
+                $('[id*="fldsuser"]').prop( "disabled", false);
+                $('[id*="flds0"]').prop( "disabled", false);
+                $('[id*="theTextInput0"]').prop( "disabled", false);
+                $('[id*="recordingid"]').prop( "disabled", false);
+                $('[id*="conldlookup"]').prop( "disabled", true );
+                $('[id*="conldlookup"]').val( "0" );
+                $('[id*="OS"]').prop( "disabled", false );
+
+                
+            } 
+                else
+                {  
+                    $('[id*="Allflds"]').prop( "disabled", false);
+                    $('[id*="referenceids"]').prop( "disabled", false);
+                    $('[id*="fldsuser"]').prop( "disabled", false);
+                    $('[id*="flds0"]').prop( "disabled", false);
+                    $('[id*="theTextInput0"]').prop( "disabled", false);
+                    $('[id*="recordingid"]').prop( "disabled", false);        
+                    $('[id*="conldlookup"]').prop( "disabled", false);
+                    $('[id*="OS"]').prop( "disabled", false );
+
+                }    
+        }
+        // pass selected Field Value
+        function sendSelectedPicVal(value1){
+            
+            var selectedvalue1 = value1;
+            console.log('my variable1 : ' + selectedvalue1);
+            //alert('checkbox');
+            passFieldValMethod(selectedvalue1);
+            return false;
+        }
+
+        function sendSelectedPicVal2(value2){
+            
+            var selectedvalue2 = value2;
+             console.log('my variable2 : ' + selectedvalue2);
+            //alert('@@@ In 2 Js'+selectedvalue2);
+            passFieldValMethod2(selectedvalue2);
+            return false;
+        }
+
+        function sendSelectedPicVal3(value3){
+            
+            var selectedvalue3 = value3;
+             console.log('my variable3 : ' + selectedvalue3);
+            //alert('@@@ In 3 Js'+selectedvalue3);
+            passFieldValMethod3(selectedvalue3);
+            return false;
+        }
+
+        function sendSelectedPicVal4(value4){
+            
+            var selectedvalue4 = value4;
+            console.log('my variable4 : ' + selectedvalue4);
+            //alert('@@@ In 4 Js'+selectedvalue4);
+            passFieldValMethod4(selectedvalue4);
+            return false;
+        }
+
+        function sendSelectedPicVal5(value5){
+            
+            var selectedvalue5 = value5;
+            console.log('my variable5 : ' + selectedvalue5);
+            //alert('@@@ In 5 Js'+selectedvalue5);
+            passFieldValMethod5(selectedvalue5);
+            return false;
+        }
+
+        function sendSelectedPicVal6(value6){
+            
+            var selectedvalue6 = value6;
+            console.log('my variable6 : ' + selectedvalue6);
+            //alert('@@@ In 6 Js'+selectedvalue6);
+            passFieldValMethod6(selectedvalue6);
+            return false;
+        }
+
+        function updatevalueJS1(selvalue) {
+            //alert('@@@ selvalue2 filter = '+selvalue);
+            console.log('selvalue>>>'+selvalue);
+            updatevalue1(selvalue);
+        }
+        function updatevalueJS2(selvalue) {
+            console.log('selvalue:2:>>>'+selvalue);
+            updatevalue2(selvalue);
+        }
+        function updatevalueJS3(selvalue) {
+            console.log('selvalue:3:>>>'+selvalue);
+            updatevalue3(selvalue);
+        }
+        function updatevalueJS4(selvalue) {
+            // alert('@@selvalue--4'+selvalue);
+            updatevalue4(selvalue);
+        }
+        function updatevalueJS5(selvalue) {
+            //alert('@@selvalue--5'+selvalue);
+            updatevalue5(selvalue);
+        }
+        function updatevalueJS6(selvalue) {
+            updatevalue6(selvalue);
+        }
+    </script>
+</apex:page>

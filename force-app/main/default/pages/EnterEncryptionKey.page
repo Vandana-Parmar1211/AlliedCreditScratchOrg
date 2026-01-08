@@ -1,0 +1,33 @@
+<apex:page controller="EncryptionKeyController">
+       
+         <style>
+        .largeInput {
+            width: 450px; /* Adjust the width as needed */
+            height: 20px; /* Adjust the height as needed */
+            
+        }
+    </style>
+        <apex:form >
+            <apex:pageMessages />
+        <apex:pageBlock title="Enter Airwaves360 Encryption Key" rendered="{!!falg}">
+            <apex:pageBlockSection >
+            <apex:inputSecret value="{!encryptionKey}" label="Enter Encryption Key :" styleClass="largeInput" />
+            </apex:pageBlockSection>
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!processInput}" value="Submit"/>
+                <apex:commandButton action="{!clearInput}" value="Delete" />
+            </apex:pageBlockButtons>
+            
+        </apex:pageBlock>
+            
+              <apex:pageBlock title="Enter Airwaves360 Encryption Key" rendered="{!falg}">
+                  
+                   <apex:pageBlockButtons >
+                       <apex:commandButton action="{!clearInput}" value="Delete" />
+                  </apex:pageBlockButtons>
+            </apex:pageBlock>
+    </apex:form>
+    
+   
+       
+</apex:page>

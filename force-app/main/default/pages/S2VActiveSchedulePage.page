@@ -1,0 +1,33 @@
+<apex:page controller="S2VActiveSchedules">
+    <apex:form >
+        <apex:pageBlock rendered="{!IF(AND(lstS2VVoiceMails != null, lstS2VVoiceMails.size > 0), TRUE, FALSE)}">
+            <apex:pageBlockTable value="{!lstS2VVoiceMails}" var="s2v">
+                <apex:column headerValue="Action">
+					<a href="javascript:delRcrd('{!JSINHTMLENCODE(s2v.Id)}');">Del</a>
+                </apex:column>
+                 <apex:column value="{!s2v.Object_Name__c}" />
+                 <apex:column value="{!s2v.Reference_Field_Lable__c}" />
+                 <apex:column value="{!s2v.Recording_Name__c}" />
+                 <apex:column value="{!s2v.CreatedBy_Name__c}" />
+                
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+        <apex:pageBlock rendered="{!IF(OR(lstS2VVoiceMails == null, lstS2VVoiceMails.size == 0), TRUE, FALSE)}">
+            There is no template available for sending voicemail.
+        </apex:pageBlock>
+        <apex:actionFunction name="deleteRecord" action="{!deleteRecord}" reRender="">
+            <apex:param name="param1" assignTo="{!recId}" value=""/>
+        </apex:actionFunction>
+    </apex:form>
+    <apex:includeScript value="{!$Resource.JavaScrpit}"/>
+    <script>
+        function delRcrd(recId) {
+            var r = confirm("Are you sure?");
+            if (r == true) {
+                deleteRecord(recId);
+                return true;
+            }
+            return false;
+        }
+    </script>
+</apex:page>

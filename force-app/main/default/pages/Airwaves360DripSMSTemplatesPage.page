@@ -1,0 +1,391 @@
+<!--
+ * Created By - vandana parmar
+ * Date - 27-02-24
+ * Purpose - To Create new / edit SMS Templates and to show list of created SMS Templates
+-->
+<apex:page controller="Airwaves360SMSTemplatesCtrl" cache="false" title="SMS Templates" tabStyle="Account" showHeader="true" sidebar="true"  >
+    <html>
+    <head>
+        <apex:includeScript value="{!$Resource.googleAPIJQuery}"/>
+        <apex:includeScript value="{!$Resource.githubJQuery}"/>
+        <apex:stylesheet value="{!URLFOR($Resource.SLDS1050, 'styles/salesforce-lightning-design-system.min.css')}" />
+        <apex:slds />
+        <script type="text/css">
+
+            table, th, td {
+              width:25%; 
+              padding-bottom: 10px;
+            }
+
+            .spacing {
+                margin-right: 20px;
+            }
+           
+        </script>
+    </head>
+    <apex:form >
+        <!-- Action Functions -->
+
+        <apex:actionFunction name="displayNewTemplate" action="{!displayNewTemplate}" reRender="main-panel" >          
+        </apex:actionFunction>
+
+        <apex:actionFunction name="displayEditTemplate" action="{!displayEditTemplate}" reRender="main-panel" >   
+            <apex:param value="" name="editableTemplateId" assignTo="{!editTemplateId}"/>       
+        </apex:actionFunction>
+
+        <apex:actionFunction name="deleteSMSTemplate" action="{!deleteSMSTemplate}" reRender="main-panel" >   
+            <apex:param value="" name="deletableTempId" assignTo="{!deleteTempId}"/>       
+        </apex:actionFunction>
+
+        <apex:actionFunction name="cancelTemplate" action="{!cancelTemplate}" reRender="main-panel" >          
+        </apex:actionFunction>
+
+        <apex:actionFunction name="getSMSTemplateType" action="{!getSMSTemplateType}" reRender="select-field-source-panel,select-field-panel" >
+           <apex:param value="" name="type" assignTo="{!SMSTemplateType}"/>
+        </apex:actionFunction>
+
+        <apex:actionFunction name="getSMSTemplateSource" action="{!getSMSTemplateSource}" reRender="select-field-panel,field-toInsert-Panel" >
+           <apex:param value="" name="source" assignTo="{!SMSTemplateSource}"/>
+        </apex:actionFunction>
+
+        <apex:actionFunction name="getSelectedField" action="{!getSelectedField}" reRender="select-field-panel,field-toInsert-Panel" >
+           <apex:param value="" name="source" assignTo="{!SelectedField}"/>
+        </apex:actionFunction>
+
+        <apex:actionFunction name="saveSMSTemplate" action="{!saveSMSTemplate}" reRender="main-panel,error-panel" >          
+        </apex:actionFunction>
+
+        <!-- Main Header -->
+        <div>
+            <span style="font-size: x-large;">SMS Templates</span>
+        </div>
+
+        <!-- FORM -->
+        <div>
+            
+        <apex:outputPanel id="main-panel">
+            <!-- ~~~~~~~~~~~~~~~~~~~~ -->
+            <!--    Templates List    -->
+            <!-- ~~~~~~~~~~~~~~~~~~~~ -->
+           
+            <apex:outputPanel id="template-list-panel"  rendered="{!isListView}">
+               
+                    <apex:commandButton id="btn-new-template" styleclass="slds-button slds-button_brand" style="margin-bottom: 10px;margin-top: 10px;" value="New Template" onclick="ShowNewTemplate(); return false;" />
+                    <div id="Recent-SMS-Templates" style="min-height: 450px;">
+                    
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                        <tr>
+                            <th></th>
+                            <th>Template Id</th>
+                            <th>Name</th>
+                            <th>sObject</th>
+                            <th>Template Body</th>
+                            <th>Created Date</th>
+                        </tr>
+
+                        <apex:repeat value="{!lst_SMSTemplates}" var="temp">
+                            <tr>
+                                <td>
+                                    <a style="color:royalblue;" id="deleteLink-{!HTMLENCODE(temp.Id)}" href="#" data-temp-name="{!JSENCODE(temp.Name)}">Del</a> |
+                                    <a style="color:royalblue;" id="editLink-{!HTMLENCODE(temp.Id)}" data-template-id="{!JSENCODE(temp.Id)}">Edit</a>
+                                </td>   
+                                <td><a id="{!HTMLENCODE(temp.Id)}" href="javascript:ShowEditTemplate('{!JSINHTMLENCODE(temp.Id)}');">{!HTMLENCODE(temp.Name)}</a></td>
+                                <td>{!HTMLENCODE(temp.Template_Name__c)}</td>
+                                <td>{!HTMLENCODE(temp.Object_Name__c)}</td>
+                                <td>{!HTMLENCODE(temp.Template_Body__c)}</td>
+                                <td>
+                                    <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                                        <apex:param value="{!temp.CreatedDate}" />
+                                    </apex:outputText>
+                                </td>
+                            </tr>
+                        </apex:repeat>
+
+
+                    </table>
+                    </div>
+               
+            </apex:outputPanel>
+
+            <!-- ~~~~~~~~~~~~~~~~~~~~ -->
+            <!-- Create New Templates -->
+            <!-- ~~~~~~~~~~~~~~~~~~~~ -->
+
+            
+            
+            <apex:outputPanel id="new-template-panel" rendered="{!(isListView==false)}">
+
+            
+            
+
+            <div> <hr style="margin-top: 20px;margin-bottom: 20px;"/>
+                <table width="50%" class="slds-align_absolute-center">
+                    <!-- New Templates Name -->
+                    <tr>
+                        <td style="width:45%;">
+                            <div style="padding-bottom: 10px;"> 
+                            <span style="margin-right: 20px;">Template Name</span>                                 
+                        </div>
+                        </td>
+                        <td>
+                            <div style="padding-bottom: 10px;">                                
+                            <apex:inputText id="new-template-name" value="{!SMSTemplateName}"></apex:inputText>
+                        </div>
+                        </td>
+                    </tr>
+                    <hr style="margin-top: 20px;margin-bottom: 20px;"/>
+
+                    <!-- New Templates Type / sObject -->
+                    <tr>
+                        <td style="width:45%;">
+                             <div style="padding-bottom: 10px;"> 
+                                <span style="margin-right: 20px;">Select Template Type</span>   
+                            </div>
+                        </td>
+                        <td>
+                             <div style="padding-bottom: 10px;">     
+                                <apex:selectList size="1" id="selectedTemplateType" value="{!SMSTemplateType}" onchange="setSMSTemplateType();" style="{!if(editTemplateId != null, 'pointer-events:none;background-color:lightgrey;','')}">
+                                    <apex:selectOption itemLabel="Lead" itemValue="Lead"></apex:selectOption>
+                                    <apex:selectOption itemLabel="Contact" itemValue="Contact" ></apex:selectOption>
+                                </apex:selectList>
+                                
+                            </div>
+                        </td>
+                    </tr>
+
+
+                    <!-- New Templates Select Field Source  -->
+                    <tr>
+                        <td style="width:45%;">
+                            <div style="padding-bottom: 10px;">
+                                <span style="margin-right: 20px;">Available Field Type</span> 
+                            </div>
+                        </td>
+                        <td>
+                            <div style="padding-bottom: 10px;">
+                                <apex:outputpanel id="select-field-source-panel">                        
+                                    <apex:selectList size="1" id="selectedSource" value="{!SMSTemplateSource}" onchange="setSMSTemplateSource();">
+                                       <apex:selectOptions value="{!AllSourceNames}"/>
+                                    </apex:selectList> 
+                                </apex:outputpanel>
+                            </div>
+                        </td>
+                    </tr>
+
+
+                    <!-- New Templates Select Field  -->
+                    <tr>
+                        <td style="width:45%;">
+                            <div style="padding-bottom: 10px;">
+                                 <span style="margin-right: 20px;">Select Field</span> 
+                            </div>
+                        </td>
+                        <td>
+                            <div style="padding-bottom: 10px;">
+                                <apex:outputpanel id="select-field-panel">
+                                     <apex:selectList size="1" id="selectedField" value="{!SelectedField}" onchange="setSelectedField();">
+                                        <apex:selectOptions value="{!AllFields}"/>
+                                    </apex:selectList>
+                                </apex:outputpanel>
+                            </div>
+                        </td>
+                    </tr>
+
+
+                    <!-- New Templates Insert Field Button -->
+                    <tr>
+                        <td style="width:45%;">
+                            <div style="padding-bottom: 10px;">
+                                <span style="margin-right: 20px;">Merge Field</span>
+                            </div>  
+                        </td>
+                        <td>
+                           <div style="padding-bottom: 10px;">                         
+                            <apex:outputpanel id="field-toInsert-Panel">
+                                <apex:inputText id="selected-field-toInsert" value="{!SelectedFieldToInsert}"></apex:inputText> 
+                            </apex:outputpanel> 
+                            <apex:commandButton style="margin-left: 10px;" value="Insert" onclick="buildTemplateBody(); return false; " />
+                            </div> 
+                        </td>
+                    </tr>
+                </table> 
+                </div>
+                <hr/>
+
+
+                <!-- New Templates Body  -->
+                <div class="slds-align_absolute-center" style="padding-bottom: 10px;width:100%;">
+                    <apex:inputTextarea id="input-template-body" value="{!SMSTemplateBody}" cols="70" rows="15"/>
+                        
+                </div>
+
+
+                 <!-- New Templates Save Button / Cancel Button-->
+                <div style="padding-bottom: 10px;" class="slds-align_absolute-center">
+                    <apex:commandButton value="Save" onclick="checkValidation(); return false;" styleclass="slds-button slds-button_brand"/>
+                    <apex:commandButton value="Cancel" onclick="CancelTemplate(); return false;" style="margin-left: 10px;" styleclass="slds-button slds-button_outline-brand"/>
+                </div>
+            
+            
+            </apex:outputPanel>
+
+        </apex:outputPanel>   
+        </div>
+    </apex:form>
+
+    <script>
+
+        
+        function ShowNewTemplate(){
+            displayNewTemplate();           
+            return false;
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            var editLinks = document.querySelectorAll("a[id^='editLink-']");
+            editLinks.forEach(function(link) {
+                link.addEventListener("click", function(event) {
+                    event.preventDefault();
+                    var templateId = this.getAttribute('data-template-id');
+                    ShowEditTemplate(templateId);
+                });
+            });
+
+            var deleteLinks = document.querySelectorAll("a[id^='deleteLink-']");
+            deleteLinks.forEach(function(link) {
+                link.addEventListener("click", function(event) {
+                    event.preventDefault();
+                    var templateId = this.id.replace('deleteLink-', '');
+                    var tempName = this.getAttribute('data-temp-name');
+                    DelSMSTemplate(templateId, tempName);
+                });
+            });
+        });
+
+        function ShowEditTemplate(templateId) {
+            displayEditTemplate(templateId);
+            document.querySelectorAll('[id*=selectedTemplateType]').forEach(function(element) {
+                element.style.pointerEvents = 'none';
+                element.style.backgroundColor = 'lightgrey';
+            });
+            return false;
+        }
+
+        function DelSMSTemplate(templateId, tempName) {
+            var decodedTempName = decodeURIComponent(tempName);
+            if (confirm('Do you want to delete ' + decodedTempName + ' permanently?')) {
+                deleteSMSTemplate(templateId);
+                setTimeout(function(){ location.reload(); }, 1000);
+            }
+            return false;
+        }
+        function CancelTemplate(){
+            cancelTemplate();
+        }
+        
+        function setSMSTemplateType(){
+
+            // console.('Inside getSMSTemplateType'); 
+            var selectedType = $('[id*=selectedTemplateType]').val();
+            //$('[id*=selectedTemplateType]').css({'pointer-events':'none','background-color':'lightgrey'});  
+            waitFunction();          
+            getSMSTemplateType(selectedType);
+            waitCloseFunction();
+            return false;
+        }
+
+        function setSMSTemplateSource(){
+            // console.('Inside setSMSTemplateSource'); 
+            var SelectedSource =  $('[id*=selectedSource]').val(); 
+            // console.(SelectedSource); 
+            waitFunction();
+            getSMSTemplateSource(SelectedSource);
+            waitCloseFunction();
+            return false;
+        }
+
+        function setSelectedField(){
+            // console.('Inside setSelectedField');             
+            var selectedField =  $('[id*=selectedField]').val(); 
+            // console.(selectedField); 
+            waitFunction();
+            getSelectedField(selectedField);
+            waitCloseFunction();
+            return false;
+        }
+
+        function buildTemplateBody(){
+            waitFunction();
+            $('[id*=selectedTemplateType]').css({'pointer-events':'none','background-color':'lightgrey'});
+            var pos = $('[id*=input-template-body]')[0].selectionStart;
+            var body = $('[id*=input-template-body]').val();
+            var strToInsert = $('[id*=selected-field-toInsert]').val();
+            var tempBody = body.slice(0, pos) + strToInsert + body.slice(pos);
+            $( "[id*=input-template-body]" ).val(tempBody);
+            waitCloseFunction();
+            return false;
+        }
+
+        function checkValidation(){
+
+            
+                // console.('Inside checkValidation');
+                var tempName = $('[id*=new-template-name]').val().trim();
+                var tempBody = $( "[id*=input-template-body]" ).val().trim();
+                var isValid = false;
+                var inValidCount = 0;
+
+                if(tempName != null && tempName != ''){
+                    $('[id*=new-template-name]').css({'border-color':'lightgrey','border-width':'thin'});
+                }
+                else
+                {
+                    $('[id*=new-template-name]').css('border-color','red'); 
+                    inValidCount++;
+                }
+
+                if(tempBody != null && tempBody != ''){
+                    $('[id*=input-template-body]').css({'border-color':'lightgrey','border-width':'thin'});
+                }
+                else
+                {
+                    $('[id*=input-template-body]').css('border-color','red'); 
+                    inValidCount++;
+                }
+
+                if(inValidCount == 0){
+                    
+                    // console.('Valid Data');
+                    saveSMSTemplate();
+                    setInterval(function(){ location.reload(); }, 1000);
+                }
+                else
+                {
+                    // console.('Invalid Data');
+                     return false;
+                }
+                //waitCloseFunction();
+           
+        }
+
+        function waitFunction(){
+            $.blockUI({
+
+                message: '<img src="{!$Resource.Loading}" width="70px" height="70px" />',
+                css: {
+                    border:     'none',
+                    backgroundColor:'transparent'
+                }
+            });
+        }
+
+        function waitCloseFunction()
+        {            
+            $.unblockUI();
+        }
+                   
+        
+
+    </script>  
+    </html>
+</apex:page>

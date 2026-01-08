@@ -1,0 +1,1062 @@
+<apex:page tabStyle="Airwaves360_Drip_Recording_Page__tab" controller="Airwaves360RecordingPageController"  sidebar="false" showHeader="true" standardStylesheets="false">
+    <apex:includeScript value="{!$Resource.Jquery}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.SLDS1050, 'styles/salesforce-lightning-design-system.min.css')}" />  
+    <apex:includeScript value="../../soap/ajax/26.0/connection.js" /> 
+    <apex:stylesheet value="{!URLFOR($Resource.BootstrapCSS)}"/>
+    <apex:includeScript value="{!URLFOR($Resource.googleAPIJQuery, '/jquery_1_12_0_min_js.js')}"/>
+    <style>
+        .row {
+            
+            
+            
+        }
+    
+    </style>
+    <script type="text/javascript">
+        (function() {
+            window.onload = ready;
+            window.microm = null;
+            var status, currentTime, duration;
+            
+            function ready() {
+                window.microm = new Microm();
+                
+                status = $('#status span');
+                currentTime = $('#current-time span');
+                duration = $('#duration span');
+                
+                // Microm events
+                microm.on('timeupdate', updateCurrentTime);
+                microm.on('loadedmetadata', onLoaded);
+                microm.on('play', onPlayEvent);
+                microm.on('pause', onPauseEvent);
+                microm.on('ended', onEndEvent);
+                
+                // DOM element events
+                click('#recordBtn1',onRecord);
+                click('#recordBtn2',onRecord1);
+                click('#recordBtn3',onRecord2);
+                click('#recordBtn4',onRecord3);
+                click('#recordBtn5',onRecord4);
+                click('#recordBtn6',onRecord5);
+                click('#recordBtn7',onRecord6);
+                click('#recordBtn8',onRecord7);
+                click('#recordBtn9',onRecord8);
+                click('#recordBtn10',onRecord9);
+                // click('#recordBtn6',onRecord5);
+                //click('#recordBtn7',onRecord6);
+                
+                //click('#play', onPlay);
+                //click('#pauseBtn', onPauseRecording);
+                click('#stopBtn1', onStop);
+                click('#stopBtn2', onStop1);
+                click('#stopBtn3', onStop2);
+                click('#stopBtn4', onStop3);
+                click('#stopBtn5', onStop4);
+                click('#stopBtn6', onStop5);
+                click('#stopBtn7', onStop6);
+                click('#stopBtn8', onStop7);
+                click('#stopBtn9', onStop8);
+                click('#stopBtn10', onStop9);
+                
+                
+                click('#playBtn1', onStop);
+                //click('#get-mp3', onGetMp3);
+                //click('#get-wav', onGetWav);
+                //click('#get-base64', onGetBase64);
+                //click('#download', onDownload);
+            }
+            
+            function onLoaded(time) {
+                duration.innerHTML = time;
+            }
+            
+            function updateCurrentTime(time) {
+                currentTime.innerHTML = time;
+            }
+            
+            function onPlayEvent() {
+                status.innerHTML = 'Playing';
+            }
+            
+            function onPauseEvent(currentTime) {
+                status.innerHTML = 'Paused';
+            }
+            
+            function onEndEvent() {
+                status.innerHTML = 'Ended';
+            }
+            
+            
+            function onRecord() {
+                
+                microm.record().then(function() {
+                    status.innerHTML = 'Recording';
+                    onRecordClick('1');
+                }).catch(function(error) {
+                    console.log('error recording', error);
+                })
+            }
+            function onRecord1() {
+                
+                microm.record().then(function() {
+                    status.innerHTML = 'Recording';
+                    onRecordClick('2');
+                }).catch(function(error) {
+                    console.log('error recording', error);
+                })
+            }
+            function onRecord2() {
+                
+                microm.record().then(function() {
+                    status.innerHTML = 'Recording';
+                    onRecordClick('3');
+                }).catch(function(error) {
+                    console.log('error recording', error);
+                })
+            }
+            function onRecord3() {
+                
+                microm.record().then(function() {
+                    status.innerHTML = 'Recording';
+                    onRecordClick('4');
+                }).catch(function(error) {
+                    console.log('error recording', error);
+                })
+            }
+            function onRecord4() {
+                
+                microm.record().then(function() {
+                    status.innerHTML = 'Recording';
+                    onRecordClick('5');
+                }).catch(function(error) {
+                    console.log('error recording', error);
+                })
+            }
+            
+            function onRecord5() {
+                
+                microm.record().then(function() {
+                    status.innerHTML = 'Recording';
+                    onRecordClick('6');
+                }).catch(function(error) {
+                    console.log('error recording', error);
+                })
+            }
+            function onRecord6() {
+                
+                microm.record().then(function() {
+                    status.innerHTML = 'Recording';
+                    onRecordClick('7');
+                }).catch(function(error) {
+                    console.log('error recording', error);
+                })
+            }
+            function onRecord7() {
+                
+                microm.record().then(function() {
+                    status.innerHTML = 'Recording';
+                    onRecordClick('8');
+                }).catch(function(error) {
+                    console.log('error recording', error);
+                })
+            }
+            function onRecord8() {
+                
+                microm.record().then(function() {
+                    status.innerHTML = 'Recording';
+                    onRecordClick('9');
+                }).catch(function(error) {
+                    console.log('error recording', error);
+                })
+            }
+            function onRecord9() {
+                
+                microm.record().then(function() {
+                    status.innerHTML = 'Recording';
+                    onRecordClick('10');
+                }).catch(function(error) {
+                    console.log('error recording', error);
+                })
+            }
+            
+            function onPlay() {
+                // console.log('onPlay');
+                microm.play();
+            }
+            
+            function onPause() {
+                // console.log('onPause');
+                microm.pause();
+            }
+            
+            function onPauseRecording() {
+                microm.pauseRecording().then(function(mp3) {
+                    status.innerHTML = 'Paused';
+                });
+                // console.log('onPauseRecording');
+                //microm.isRecording = false;
+                onPauseClick();
+                
+            }
+            
+            function onResumeRecording() {
+                microm.resumeRecording().then(function(mp3) {
+                    status.innerHTML = 'Paused';
+                });
+                // console.log('onResumeRecording');
+                //microm.isRecording = false;
+                //onPauseClick();
+                
+            }
+            
+            function onStop() {
+                debugger;
+                microm.stop().then(function(mp3) {
+                    status.innerHTML = 'Paused';
+                    document.getElementById('save1').href = microm.getUrl();
+                    
+                    debugger;
+                    // console.log(microm.getBlob());
+                    
+                    setBlob(microm.getBlob());
+                    getPlayerReady('1');
+                });
+                
+                onStopClick('1');
+            }
+            
+            function onStop1() {
+                
+                microm.stop().then(function(mp3) {
+                    status.innerHTML = 'Paused';
+                    document.getElementById('save2').href = microm.getUrl();
+                    
+                    setBlob(microm.getBlob());
+                    getPlayerReady('2');
+                });
+                
+                onStopClick('2');
+            }function onStop2() {
+                
+                microm.stop().then(function(mp3) {
+                    status.innerHTML = 'Paused';
+                    document.getElementById('save3').href = microm.getUrl();
+                    
+                    setBlob(microm.getBlob());
+                    getPlayerReady('3');
+                });
+                
+                onStopClick('3');
+            }function onStop3() {
+                microm.stop().then(function(mp3) {
+                    status.innerHTML = 'Paused';
+                    document.getElementById('save4').href = microm.getUrl();
+                    
+                    setBlob(microm.getBlob());
+                    getPlayerReady('4');
+                });
+                
+                onStopClick('4');
+            }function onStop4() {
+                
+                microm.stop().then(function(mp3) {
+                    status.innerHTML = 'Paused';
+                    document.getElementById('save5').href = microm.getUrl();
+                    
+                    setBlob(microm.getBlob());
+                    getPlayerReady('5');
+                });
+                
+                onStopClick('5');
+            }
+            function onStop5() {
+                
+                microm.stop().then(function(mp3) {
+                    status.innerHTML = 'Paused';
+                    document.getElementById('save6').href = microm.getUrl();
+                    
+                    setBlob(microm.getBlob());
+                    getPlayerReady('6');
+                });
+                
+                onStopClick('6');
+            }
+            function onStop6() {
+                
+                microm.stop().then(function(mp3) {
+                    status.innerHTML = 'Paused';
+                    document.getElementById('save7').href = microm.getUrl();
+                    
+                    setBlob(microm.getBlob());
+                    getPlayerReady('7');
+                });
+                
+                onStopClick('7');
+            }
+            function onStop7() {
+                
+                microm.stop().then(function(mp3) {
+                    status.innerHTML = 'Paused';
+                    document.getElementById('save8').href = microm.getUrl();
+                    
+                    setBlob(microm.getBlob());
+                    getPlayerReady('8');
+                });
+                
+                onStopClick('8');
+            }
+            function onStop8() {
+                
+                microm.stop().then(function(mp3) {
+                    status.innerHTML = 'Paused';
+                    document.getElementById('save9').href = microm.getUrl();
+                    
+                    setBlob(microm.getBlob());
+                    getPlayerReady('9');
+                });
+                
+                onStopClick('9');
+            }
+            function onStop9() {
+                
+                microm.stop().then(function(mp3) {
+                    status.innerHTML = 'Paused';
+                    document.getElementById('save10').href = microm.getUrl();
+                    
+                    setBlob(microm.getBlob());
+                    getPlayerReady('10');
+                });
+                
+                onStopClick('10');
+            }
+            
+            function onGetMp3() {
+                microm.getMp3().then(function(mp3) {
+                    // console.log('onGetMp3', mp3);
+                });
+            }
+            
+            function onGetWav() {
+                // console.log('onGetWav');
+                microm.getWav();
+            }
+            
+            function onGetBase64() {
+                microm.getBase64().then(function(base64string) {
+                    // console.log(base64string);
+                });
+            }
+            
+            function onDownload() {
+                microm.download('microm');
+            }
+            
+            function $(selector){
+                return document.querySelector(selector);
+            }
+            
+            function click(selector,callback){
+                $(selector).addEventListener('click',callback);
+            }
+        })();
+    </script>
+    <script type="text/javascript">
+    var option = 0;
+    var theInterval;
+    var counter = 0;
+    var limitDuration = 120;
+    var recordingStarted = false;
+    function alertIploadComplete(indx)
+    {
+        //alert('done');
+        
+        //$( "#status"+indx ).text('Uploaded Successfully!');
+        setTimeout(function(){
+            $( "#status"+indx ).text('');
+            $( "#loader"+indx ).hide();
+            location.reload();
+        }, 1000);
+        // console.log('Done...');
+    }
+    var base64;
+    var chunks;
+    var nChunk = 0;
+    var pureBlob;
+    function setBlob(b)
+    {
+        
+        pureBlob = b;
+    }
+    function convertDataURIToBinary(dataURI) {
+        var BASE64_MARKER = ';base64,';
+        var base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
+        var base64 = dataURI.substring(base64Index);
+        var raw = window.atob(base64);
+        var rawLength = raw.length;
+        var array = new Uint8Array(new ArrayBuffer(rawLength));
+        
+        for(i = 0; i < rawLength; i++) {
+            array[i] = raw.charCodeAt(i);
+        }
+        return array;
+    }
+    function getPlayerReady(indxnum)
+    {
+        
+        var reader = new window.FileReader();
+        reader.readAsDataURL(pureBlob);
+        reader.onloadend = function() {
+            base64 = reader.result;
+            var binary= convertDataURIToBinary(base64);
+            var blob=new Blob([binary], {type : 'audio/mp3'});
+            var blobUrl = URL.createObjectURL(blob);
+            $("#playerSrc"+indxnum).attr("src", blobUrl);
+            $("#audio"+indxnum)[0].pause();
+            $("#audio"+indxnum)[0].load();//suspends and restores all audio element
+            
+            base64 = base64.split(',')[1];
+            $( "#loader"+indxnum ).hide();
+            $( "#status" ).text('');
+        }
+    }
+    function getfileName()
+    {
+        return $('#recName').val().replace(" ","_")+".mp3";
+    }
+    function startProgressBar(srnum)
+    {
+        theInterval = setInterval(function(){
+            counter++;
+            var percent = (counter/limitDuration)*100;
+            $( "#bar"+srnum ).prop("style","width:"+percent+"%");
+            var minute = "0"+Math.floor(counter/60);
+            var second = counter % 60;
+            second = (second >=10 ? "" : "0")+second;
+            $( "#bar"+srnum ).html(minute+":"+second);
+            if(counter == limitDuration)
+            {
+                $("#stopBtn"+srnum).trigger('click');
+            }
+        }, 1000);
+        return false;
+    }
+    
+    function stopProgressBar(indx)
+    {
+        clearInterval(theInterval);
+        $( "#status"+indx).text('');
+        
+        
+    }
+    
+    function onRecordClick(srnum)
+    {
+        
+        $('[id*="saveButton"]').hide();
+        
+        $('[id*="recordBtn"]').prop('disabled',true);
+        
+        option = 1;
+        if(!recordingStarted) {
+            recordingStarted = !recordingStarted;
+        }
+        $( "#recordBtn"+srnum ).prop('disabled',true);
+        $( "#pauseBtn"+srnum ).prop('disabled',false);
+        $( "#stopBtn"+srnum ).prop('disabled',false);
+        startProgressBar(srnum);
+    }
+    
+    function onPauseClick()
+    {
+        option = 1;
+        $( "#recordBtn" ).prop('disabled',false);
+        $( "#pauseBtn" ).prop('disabled',true);
+        $( "#stopBtn" ).prop('disabled',false);
+        stopProgressBar();
+    }
+    
+    function onStopClick(srnum)
+    {
+        option = 1;
+        $("#DeleteButton"+srnum).hide();
+        $( "#pauseBtn"+srnum ).prop('disabled',true);
+        $( "#stopBtn"+srnum ).prop('disabled',true);
+        $( "#recordBtn"+srnum ).prop('disabled',false);
+        $( "#saveBtn"+srnum ).prop('disabled',false);
+        $("#saveButton"+srnum).show();
+        
+        $( "#loader"+srnum ).show();
+        $( "#status"+srnum).text('Encoding...');
+        $("#playbtn"+srnum).prop('disabled',false);
+        $('[id*="recordBtn"]').prop('disabled',false);
+        
+        
+        recordingStarted = !recordingStarted;
+        stopProgressBar(srnum);
+        
+        counter = 0;
+        var hasFileMapvalOnClick = JSON.parse('{!JSENCODE(avairecordidduplicate)}');
+
+        for (var recId in hasFileMapvalOnClick) {
+            var hasFileClick = hasFileMapvalOnClick[recId].hasFile;
+            // Perform your desired actions based on hasFile and isPlaybtn
+            $("#recordBtn" + recId).prop('disabled', hasFileClick);
+            $("#DeleteButton" + recId).toggle(hasFileClick);
+        }
+            
+    }
+    
+    var noOfAudioFiles = [];
+    
+    // created by vandana - method fetches all the recording from the yabbr
+    function playAudiobtn(ele){
+        var index = ele.getAttribute('data-index');
+        console.log(index+'index:::::'+ele);
+        if(option == 1){
+       		 ShowPlay(index);
+        }
+        else{
+        Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.Airwaves360RecordingPageController.getAudioFileIds}',index,
+            function(result, event) {
+                if (event.status) {
+                    // Success handling
+                    //alert('testing ');
+                    // console.log('Response from Apex: ' + result);
+                    //DeleteclickGetFileIds(indx,result);
+                    playSpecificAudio(result,ele,index)
+                } else if (event.type === 'exception') {
+                    // Exception handling
+                    // alert('testing eroor'+event.message);
+                    console.error('An error occurred: ', event.message);
+                } else {
+                    // Other error handling
+                    // alert('testing eroor'+event);
+                    console.error('An unexpected error occurred: ', event);
+                }
+            }
+        );}
+        
+        
+    }
+    //method plays the particular audio 
+    function playSpecificAudio(secondFileId,ele,index){
+            //  alert('Hello...');
+            ele.value="Waiting...";
+            ele.disabled = true;
+         var keyval = '{!JSENCODE(keyval)}';
+                var OrgId = '{!JSENCODE(OrgId)}';
+         var CommonURL = '{!JSENCODE(CommonURL)}';
+            var endpointUrl = CommonURL+OrgId+'/files/'+secondFileId;
+            
+            // Make an HTTP GET request
+            fetch(endpointUrl, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key':'{!JSENCODE(keyval)}',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            var audioUrl = data.file && data.file.url;
+            console.log(audioUrl+'audioUrl');
+            //alert('Hello...'+audioUrl);
+            if (!audioUrl) {
+            ShowPlay(index);
+            console.error('Audio URL not found in the response.');
+            return;
+        }
+              //========
+        document.getElementById('playerSrc' + index).src = "data:audio/wav;base64," + audioUrl;
+        document.getElementById('audio'+index).style.visibility = 'visible';
+        document.getElementById('audio'+index).load();
+        ele.value="Play";
+        $('#audio'+index).toggle();
+        var audio = document.getElementById('audio'+index);
+        audio.src = audioUrl;
+        
+        
+        })
+        .catch(error => {
+            // Handle errors
+            console.error('Error:', error);
+        });
+        
+    }
+    function saveAudioOnYabbrFromApex(isRecording,indx){
+       
+        document.getElementById("file"+indx).disabled = true;
+        $( "#loader"+indx ).show();
+        $( "#status"+indx ).text('Processing...');
+        //alert('hello');
+        $( "#saveBtn"+indx ).prop('disabled',true);
+        $( "#recordBtn"+indx ).prop('disabled',false);
+        $( "#pauseBtn"+indx ).prop('disabled',true);
+        $( "#stopBtn"+indx ).prop('disabled',true);
+        $('[id*="saveBtn"]').prop('disabled',true);
+        $('[id*="recordBtn"]').prop('disabled',true);
+        $('[id*="pauseBtn"]').prop('disabled',true);
+        $('[id*="stopBtn"]').prop('disabled',true);
+        $('[id*="playbtn"]').prop('disabled',true);
+        $('[id*="DeleteButton"]').prop('disabled',true);
+        
+        var file;
+        if(isRecording)
+        {
+            file = new File([pureBlob], 'sound.mp3', {type: pureBlob.type, lastModified: Date.now()});
+        }
+        else
+        {
+            file = $('#file'+indx).prop('files')[0];
+        }
+        //alert('file @ ' + file.name);
+        //alert('file size @ ' + file.size + ' bytes');
+        calculateFileDuration(indx, file);
+    }
+    //caculate file duration 
+    function calculateFileDuration(indx, file){
+        ////alert('Hii Duration');
+        ///alert('file @ in duration ' + file);
+        /////alert('file @ ' + file.name);
+        //alert('file size @ ' + file.size + ' bytes');
+      
+        var durationAsInteger;
+        
+        // Check if files are selected
+        if (file.size  > 0) {
+            // Create an audio element
+            var audio = document.createElement('audio');
+            
+            // Set the source to the selected file
+            audio.src = URL.createObjectURL(file);
+            
+            // Wait for the metadata to be loaded
+            audio.addEventListener('loadedmetadata', function() {
+                // Get the duration in seconds
+                var durationInSeconds = audio.duration;
+                
+                // Log the duration
+                // console.log("File Duration: " + durationInSeconds + " seconds");
+                
+                // Convert duration to integer
+                durationAsInteger = parseInt(durationInSeconds);
+                
+                // Make API call
+                //alert('Hii Make API call');
+                uploadFileonYabbrPortalFirstAPIcallout(file.name, durationAsInteger,indx, file);
+            });
+        }
+    }
+    
+    // function uploadFileonYabbrPortalFirstAPIcallout(fileName, duration,indx, file) {
+    //     // Read the file as a binary string
+    //     var reader = new FileReader();
+    //     reader.onload = function(event) {
+    //         // Convert the binary string to a base64 string
+    //             var base64String = btoa(event.target.result);
+    //             console.log(base64String);
+    //             Visualforce.remoting.Manager.invokeAction(
+    //             '{!$RemoteAction.Airwaves360RecordingPageController.uploadFileonYabbrFirstCall}',fileName, duration,base64String,indx,
+    //             function(result, event) {
+    //                 // Handle the result or errors
+    //                 if (event.status) {
+    //                     alertIploadComplete(indx);
+    //                 } else {
+    //                     console.error('Error calling Apex method:', event.message);
+    //                 }
+    //             }
+    //         ); 
+            
+    //     };
+    //     reader.readAsBinaryString(file);
+       
+    // }
+    function uploadFileonYabbrPortalFirstAPIcallout(fileName, duration,indx, file) {
+        console.log('uploadFileonYabbrusingapex');
+        // Read the file as a binary string
+        var reader = new FileReader();
+        reader.onload = function(event) {
+            // Convert the binary string to a base64 string
+                var base64String = btoa(event.target.result);
+                Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.Airwaves360RecordingPageController.uploadFileonYabbrFirstCall}',fileName, duration,base64String,indx,
+                function(result, event) {
+                    // Handle the result or errors
+                    if (event.status) {
+                        alertIploadComplete(indx);
+                    } else {
+                        console.error('Error calling Apex method:', event.message);
+                    }
+                }
+            ); 
+            
+        };
+        reader.readAsBinaryString(file);
+       
+    }
+
+   
+    
+    function handleApiResponseforSecondYabberCallout(response, uploadFile, indx) {
+        //alert('API Response: ' + JSON.stringify(response));
+        var jsonString = JSON.stringify(response);
+        // Parse the JSON string into a JavaScript object
+        var jsonObject = JSON.parse(jsonString);
+        // console.log('jsonObject');
+        // console.log(jsonObject);
+        var fileId = jsonObject.id;
+        if (jsonObject.fields && typeof jsonObject.fields === 'object') {
+            var keyVal = jsonObject.fields['key'];
+            var bucketVal = jsonObject.fields['bucket'];
+            var algorithmVal =jsonObject.fields['X-Amz-Algorithm'];
+            var credentialVal = jsonObject.fields['X-Amz-Credential'];
+            var dateVal = jsonObject.fields['X-Amz-Date'];
+            var securityTokenVal =jsonObject.fields['X-Amz-Security-Token'];
+            var policyVal = jsonObject.fields['Policy'];
+            var signatureVal =jsonObject.fields['X-Amz-Signature'];
+        }
+        
+        // Your logic to handle the API response in the second function 
+        $(document).ready(function () {
+            // Corrected syntax for accessing properties
+            var formData = new FormData();
+            
+            formData.append('key', keyVal);
+            formData.append('bucket', bucketVal);
+            formData.append('X-Amz-Algorithm', algorithmVal);
+            formData.append('X-Amz-Credential', credentialVal);
+            formData.append('X-Amz-Date', dateVal);
+            formData.append('X-Amz-Security-Token', securityTokenVal);
+            formData.append('Policy', policyVal);
+            formData.append('X-Amz-Signature', signatureVal);
+            formData.append('file', uploadFile);
+            
+            $.ajax({
+                url: 'https://s3.ap-southeast-2.amazonaws.com/files.yabbr.io',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    // Handle success response
+                    // console.log(response);
+                    //alert('SUccess');
+                    alertIploadComplete(indx);
+                    //alert(indx);
+                    callApexMethodtoUpdateIhAudiocheckbox(true,indx,fileId);
+                     
+                    
+                },
+                error: function (xhr, status, error) {
+                    // Handle error
+                    console.error(error);
+                    alert(error);
+                }
+            });
+        });
+    }
+        
+    function arrayBufferToBase64(buffer) {
+        //alert('buffer'+buffer);
+        var binary = '';
+        var bytes = new Uint8Array(buffer);
+        var len = bytes.byteLength;
+        for (var i = 0; i < len; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        return window.btoa(binary);
+    }
+    
+    function Deleteclick(ele) {
+        var indx = ele.getAttribute('data-index');
+        Visualforce.remoting.Manager.invokeAction(
+                    '{!$RemoteAction.Airwaves360RecordingPageController.getAudioFileIds}',indx,
+            function(result, event) {
+                if (event.status) {
+                    // Success handling
+                    // console.log('Response from Apex: ' + result);
+                    DeleteclickGetFileIds(indx,result);
+                } else if (event.type === 'exception') {
+                    // Exception handling
+                    console.error('An error occurred: ', event.message);
+                } else {
+                    // Other error handling
+                    console.error('An unexpected error occurred: ', event);
+                }
+            }
+        );
+    }
+    
+    
+    // created by vandana - method for deleting audio from yabbr
+    function DeleteclickGetFileIds(indx, AudioFileId)
+    {
+        document.getElementById("file"+indx).disabled = false;
+        $( "#loader"+indx ).show();
+        $( "#status"+indx ).text('Processing...');
+        $( "#saveBtn"+indx ).prop('disabled',true);
+        $( "#recordBtn"+indx ).prop('disabled',false);
+        $( "#pauseBtn"+indx ).prop('disabled',true);
+        $( "#stopBtn"+indx ).prop('disabled',true);
+        $("#recordids"+indx).val();
+        $('[id*="DeleteButton"]').hide();
+        $("#DeleteButton"+indx).show();
+        
+        // alert('AudioFileId@@ ' + AudioFileId);
+        //alert('indx@@ ' + indx);
+        deleteSpecificAudio(AudioFileId,indx);
+    }
+        //method that calls from Deleteclick
+    function deleteSpecificAudio(secondFileId,indx){
+        var CommonURL = '{!JSENCODE(CommonURL)}';
+            var endpointUrl = CommonURL+'self/libraries/voice/files/'+secondFileId;
+             var keyval = '{!JSENCODE(keyval)}';
+            fetch(endpointUrl, {
+            method: 'DELETE',
+            headers: {
+                'x-api-key': '{!JSENCODE(keyval)}',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            // alert('data'+data);
+            // console.log('data:', data);
+            alertIploadComplete(indx);
+            callApexMethodtoUpdateIhAudiocheckbox(false,indx,'');
+        })
+            .catch(error => {
+            // Handle errors
+            console.error('Error:', error);
+        });
+    }
+    function callApexMethodtoUpdateIhAudiocheckbox(isAudio,indx, fileId) {
+            Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.Airwaves360RecordingPageController.deletePersonalRecording}',isAudio,indx,fileId,
+                function(result, event) {
+                    // Handle the result or errors
+                    if (event.status) {
+                    //alert('File successfully uploaded to Yabbr.');
+                    // console.log('Apex method successfully called:', result, event.status);
+                        // Additional logic or UI updates if needed
+                    } else {
+                        console.error('Error calling Apex method:', event.message);
+                        alert(' base64String is not empty .'+event.message);
+                    }
+                }, { buffer: false, escape: true }
+            );
+            
+        }
+    function getRecording(ele, index, link){    
+        // console.log(link);
+    }
+    function saveAll(ele) {
+        var indx = ele.getAttribute('data-index');
+        if(option == 1) {
+            //onSaveClick(true,indx);
+            saveAudioOnYabbrFromApex(true,indx);
+        }
+        else if(option == 2) {
+            onSaveClick(false);
+        }
+        else if(option == 3){
+            callVoiceRecord();
+        }
+    }
+    function ShowPlay(indx){
+        $('#audio'+indx).toggle();
+    }
+    function updaterecordingjs(test){
+        var btnindex = test.value;
+        var notesindex = 'Notes'+btnindex;
+        var s = document.getElementById(notesindex);
+        var notesval = s.value;
+        callupdaterecording(btnindex, notesval);
+        alert('Comment Added successfully.');
+    }
+    function viewbutton(ele){
+        var dec = ele.getAttribute('data-index');
+        document.getElementById("upload"+dec).style.display="block";
+    }
+    function newtesting(ele){
+        var indx = ele.getAttribute('data-index');
+        saveAudioOnYabbrFromApex(false,indx);
+    }
+    </script>
+    <style>
+        td {
+        border: solid 2px lightgrey;
+        }
+        
+        Button:disabled {
+        background: #aaa;
+        }
+        
+        
+        .w3-light-grey,.w3-hover-light-grey:hover,.w3-light-gray,.w3-hover-light-gray:hover{color:#000!important;background-color:#f1f1f1!important}
+        .w3-container{padding:0px 0px}
+        .w3-green,.w3-hover-green:hover{color:#fff!important;background-color:#4CAF50!important}
+        .w3-bar-block.w3-center .w3-bar-item{text-align:center}
+        
+        #bar
+        {
+        overflow: visible;
+        white-space: nowrap;
+        padding: 15px 0px 15px 0px;
+        }
+        
+    </style> 
+    <apex:pageMessages /> 
+    <apex:outputPanel id="outterpanel" rendered="{!isdisplayvfp}">
+        
+        <apex:form >            
+            <apex:actionFunction action="{!updateNotes}" name="callupdaterecording" reRender="abc">
+                <apex:param name="firstParam" assignTo="{!indexval}"  value=""/>
+                <apex:param name="secondParam" assignTo="{!notesvalue}"  value=""/>
+            </apex:actionFunction>            
+        </apex:form>
+        
+        <div class="container" style="margin-top:3%;margin-bottom:3%;border-style: ridge;width: 1350px;">
+            <br/>
+            <apex:variable var="index" value="{!1}"/>
+            
+            <table class="table" width="100%" >
+                
+                <div class="row">
+                    <div class="col-sm-1 " align="center" style="margin-left: -25px;">No.</div>
+                    <div class="col-sm-2 " align="center" style="margin-left: -55px;">Record</div>
+                    <div class="col-sm-2 " align="center">Prograss Bar</div>
+                    <div class="col-sm-1 " align="center">Play</div>
+                    <div class="col-sm-1 " align="center">Save or Delete</div>
+                    <div class="col-sm-1 " align="center">Upload .mp3 or wav file</div>
+                    <div class="col-lg-2 " align="center" style="margin-left: 80px;">Name</div> 
+                    <div class="col-sm-1 " align="center">Notes</div>
+                    <div class="col-sm-1 " align="center">Update Notes</div>                
+                </div>
+                
+                <hr/>
+                <apex:repeat value="{!numbers}" var="item"  >
+                    
+                    <tbody>
+                        <div class="row">
+                            <div class="col-sm-1" align="center" style="margin-left: -25px;">{!index}</div>
+                            <div class="col-sm-2" align="center" style="margin-left: -55px;"> 
+                                <button Id="recordBtn{!index}" class="slds-button slds-button_neutral" style="height:35px;">
+                                    <b style="color:red" >⚫</b> Record</button>
+                                <button Id="stopBtn{!index}" class="slds-button slds-button_destructive" style="height:35px;">
+                                    <b style="font-size: 13px;">∎</b> Stop</button>
+                            </div>
+                            <div class="col-sm-2" >
+                                <div class="w3-light-grey">
+                                    <div align="center" class="w3-container w3-green w3-center" id="bar{!index}" style="width:0px;">Progress: 00:00</div>
+                                </div>  
+                            </div>
+                            
+                            <div class="col-sm-1" align="center">
+                                <apex:outputPanel >
+                                    <input id = "playbtn{!index}" style="height:35px;" type="Button" data-index="{!index}" value = "Play" onclick="playAudiobtn(this);" class="slds-button slds-button_brand" />
+                                    <audio id="audio{!index}" controls="controls" data-index="{!index}" >
+                                        <source Id="playerSrc{!index}" src="" type="audio/mp3" />
+                                    </audio>  
+                                </apex:outputPanel>
+                            </div>
+                            <div class="col-sm-1" align="center">
+                                <!-- <button Id="saveButton{!index}" onclick="saveAll('{!index}','{!avairecordid[item].audio_file}')"  class="slds-button slds-button_success" style="height:35px;">Save</button> -->
+                                <button id="saveButton{!index}" onclick="saveAll(this);" data-index="{!index}" class="slds-button slds-button_success" style="height:35px;">Save</button>
+                                <button id="DeleteButton{!index}" onclick="Deleteclick(this);" data-index="{!index}" class="slds-button slds-button_destructive" style="height:35px;">Delete</button>                                
+                                <!--<input type='hidden'  id='recordids{!index}'/> -->
+                                <input type='hidden' id='recordids{!index}'/>
+                                <img Id="loader{!index}" src="/img/loading.gif" />
+                                <label id="status{!index}"/>
+                                <audio id="audio" controls="controls" Style="visibility: hidden" >
+                                    <source Id="playerSrc" src="" type="audio/mp3" />
+                                    <div id="status">
+                                        Status: <span>paused</span>
+                                    </div>
+                                    <div id="duration">
+                                        Duration: <span>0</span>
+                                    </div>
+                                    <div id="current-time">
+                                        Current time: <span>0</span>
+                                    </div>
+                                </audio> 
+                                
+                            </div>
+                            
+                            <div class="col-sm-1" align="left">
+                                <input type="file" id="file{!index}"  name="file" data-index="{!index}" class="custom-file-input" onchange="viewbutton(this);" accept=".mp3,.wav" />
+                                <div>
+                                    <button class="slds-button slds-button_destructive" data-index="{!index}" id="upload{!index}" onclick="newtesting(this);" style="height:35px;width: 94px;margin-top: 12px;display: contents;">
+                                        <b style="font-size: 10px;"></b>Upload File</button>
+                                </div>
+                            </div>
+                            
+                            <a id="save{!index}" href="#" download="myRecording00.wav"/>
+                            
+                            <div class="col-sm-2" align="center" style="margin-left: 80px;">
+                                <textarea rows="1" cols="50" class="slds-textarea" id = "description{!index}" name="description" >{!discriptionmap[item]}</textarea>
+                            </div>
+                            
+                            <div class="col-sm-1" align="center">
+                                <textarea rows="1" cols="50" class="slds-textarea" id = "Notes{!index}" name="Notes"></textarea>
+                            </div>
+                            
+                            <div class="col-sm-1" align="center">
+                                <button type="button" class="slds-button slds-button_neutral" style="height: 40px;" id="update{!index}" value="{!index}" onclick="updaterecordingjs(this);">Update Notes</button> 
+                                <apex:variable value="{!index + 1}" var="index" /> 
+                            </div>
+                            
+                        </div>      
+                    </tbody>
+                    <hr/>
+                </apex:repeat>
+                
+            </table>
+            
+        </div>
+    </apex:outputPanel>
+    
+    
+    
+    <script>
+    
+    $('[id*="loader"]').hide();
+    $('[id*="audio"]').hide();
+    $('[id*="saveButton"]').hide();
+    $('[id*="DeleteButton"]').hide();
+    $('[id*="saveBtn"]').prop('disabled',true);
+    $('[id*="recordBtn"]').prop('disabled',false);
+    $('[id*="pauseBtn"]').prop('disabled',true);
+    $('[id*="stopBtn"]').prop('disabled',true);
+    $('[id*="playbtn"]').prop('disabled',true);
+    
+    var hasFileMapval = JSON.parse('{!JSENCODE(avairecordidduplicate)}');
+        console.log(hasFileMapval);
+    for (var recId in hasFileMapval) {
+    var hasFile = hasFileMapval[recId].hasFile;
+    var isPlaybtn = hasFileMapval[recId].isPlaybtn;
+
+    if (isPlaybtn == undefined) {
+        isPlaybtn = true;
+    }
+
+    // Perform your desired actions based on hasFile and isPlaybtn
+    $("#recordBtn" + recId).prop('disabled', hasFile);
+    $("#DeleteButton" + recId).toggle(hasFile);
+    $("#playbtn" + recId).prop('disabled', isPlaybtn);
+    $("#file" + recId).prop('disabled', hasFile);
+}
+    
+    if('{!JSINHTMLENCODE($Profile.Name)}'!='System Administrator'){
+        $('[id*="description"]').prop('disabled',true);
+    }
+    
+    
+    </script>
+    <script src="{!urlfor($Resource.microm, "microm-master/dist/microm.js")}"/>
+    <!--   <script src="{!urlfor($Resource.microm, "microm-master/example.js")}"></script>-->
+    <!-- <apex:includeScript value="{!$Resource.Examplenew}"/>-->
+    
+    
+</apex:page>

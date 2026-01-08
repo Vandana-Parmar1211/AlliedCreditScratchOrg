@@ -1,0 +1,49 @@
+<apex:page lightningStylesheets="true" docType="html-5.0" id="p1" standardStylesheets="true" controller="Airwaves360IOCallerController"   tabStyle="Airwaves360_Return_Number__tab"  >
+    <apex:includeScript value="{!$Resource.Jquery}"/>
+   
+    <style type="text/css">
+        .pbTitle {
+        white-space: nowrap;
+        }
+    </style>
+    
+    
+    <apex:form >
+        <apex:pageBlock title="This is the number from where the voicemail came from. Your landline or mobile. Special numbers are not permitted."  >
+            <apex:pageMessages /> 
+            <apex:pageBlockSection id="pbs1" columns="1" > 
+                <apex:inputText label="Return Number :" required="true" id="callerIDNumber" value="{!callerIDNumber}" /> 
+                
+               <!-- <apex:pageBlockSectionItem >
+                    <apex:outputLabel >Country Code :</apex:outputLabel>  
+                    <apex:selectList id="countryCode"  size="1" value="{!callerCodeOption}" >
+                        <apex:selectOptions value="{!Allcountrycode}" />
+                       
+                    </apex:selectList> 
+                </apex:pageBlockSectionItem> -->
+                
+            </apex:pageBlockSection> 
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton value="Add Number"  id="theButton"   action="{!FetchSenderIDs}" oncomplete="window.location.reload();"  />
+            </apex:pageBlockButtons>
+            
+            
+        </apex:pageBlock> 
+        
+        
+        
+     <apex:pageBlock id="thepage">
+    <apex:pageBlockTable value="{!selectedSenderIdsList}" var="number">
+        <apex:column headerValue="Caller ID"> {!number} </apex:column>
+        <!--<apex:column headerValue="Connected">
+             <input type="button" class="btn" value="Click to verify" /> 
+        </apex:column>-->
+    </apex:pageBlockTable>
+</apex:pageBlock>
+
+
+
+        
+    </apex:form>
+    
+</apex:page>
