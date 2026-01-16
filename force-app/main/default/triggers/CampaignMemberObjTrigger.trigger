@@ -11,6 +11,7 @@ trigger CampaignMemberObjTrigger on CampaignMember (after insert,after Update) {
             'CampaignMember',
             Trigger.isUpdate,
             Trigger.isInsert
+            
         );
     }
 }
